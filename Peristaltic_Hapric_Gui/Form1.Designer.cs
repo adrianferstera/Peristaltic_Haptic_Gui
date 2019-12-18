@@ -45,6 +45,10 @@
             this.Max = new System.Windows.Forms.Button();
             this.Min = new System.Windows.Forms.Button();
             this.ChartFirstServo = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.Hz = new System.Windows.Forms.Label();
+            this.amplitudeUnit = new System.Windows.Forms.Label();
+            this.rad = new System.Windows.Forms.Label();
+            this.periodUnit = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.ChartFirstServo)).BeginInit();
             this.SuspendLayout();
             // 
@@ -185,11 +189,51 @@
             this.ChartFirstServo.TabIndex = 13;
             this.ChartFirstServo.Text = "ChartFirstServo";
             // 
+            // Hz
+            // 
+            this.Hz.AutoSize = true;
+            this.Hz.Location = new System.Drawing.Point(122, 35);
+            this.Hz.Name = "Hz";
+            this.Hz.Size = new System.Drawing.Size(20, 13);
+            this.Hz.TabIndex = 14;
+            this.Hz.Text = "Hz";
+            // 
+            // amplitudeUnit
+            // 
+            this.amplitudeUnit.AutoSize = true;
+            this.amplitudeUnit.Location = new System.Drawing.Point(122, 85);
+            this.amplitudeUnit.Name = "amplitudeUnit";
+            this.amplitudeUnit.Size = new System.Drawing.Size(15, 13);
+            this.amplitudeUnit.TabIndex = 15;
+            this.amplitudeUnit.Text = "%";
+            // 
+            // rad
+            // 
+            this.rad.AutoSize = true;
+            this.rad.Location = new System.Drawing.Point(122, 132);
+            this.rad.Name = "rad";
+            this.rad.Size = new System.Drawing.Size(22, 13);
+            this.rad.TabIndex = 16;
+            this.rad.Text = "rad";
+            // 
+            // periodUnit
+            // 
+            this.periodUnit.AutoSize = true;
+            this.periodUnit.Location = new System.Drawing.Point(122, 180);
+            this.periodUnit.Name = "periodUnit";
+            this.periodUnit.Size = new System.Drawing.Size(22, 13);
+            this.periodUnit.TabIndex = 17;
+            this.periodUnit.Text = "[   ]";
+            // 
             // PeristalticHapticActuator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.periodUnit);
+            this.Controls.Add(this.rad);
+            this.Controls.Add(this.amplitudeUnit);
+            this.Controls.Add(this.Hz);
             this.Controls.Add(this.ChartFirstServo);
             this.Controls.Add(this.Min);
             this.Controls.Add(this.Max);
@@ -229,6 +273,10 @@
         private System.Windows.Forms.Button Max;
         private System.Windows.Forms.Button Min;
         private System.Windows.Forms.DataVisualization.Charting.Chart ChartFirstServo;
+        private System.Windows.Forms.Label Hz;
+        private System.Windows.Forms.Label amplitudeUnit;
+        private System.Windows.Forms.Label rad;
+        private System.Windows.Forms.Label periodUnit;
     }
 }
 

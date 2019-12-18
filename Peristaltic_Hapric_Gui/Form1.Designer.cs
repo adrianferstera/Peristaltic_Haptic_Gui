@@ -28,17 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PeristalticHapticActuator));
             this.frequencyBox = new System.Windows.Forms.TextBox();
             this.amplitudeBox = new System.Windows.Forms.TextBox();
             this.phaseBox = new System.Windows.Forms.TextBox();
-            this.numberCycles = new System.Windows.Forms.TextBox();
+            this.periodBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
+            this.period = new System.Windows.Forms.Label();
             this.Send = new System.Windows.Forms.Button();
             this.Open = new System.Windows.Forms.Button();
             this.Kill = new System.Windows.Forms.Button();
@@ -74,14 +74,14 @@
             this.phaseBox.Click += new System.EventHandler(this.PhaseBox_Click);
             this.phaseBox.TextChanged += new System.EventHandler(this.PhaseBox_Click);
             // 
-            // numberCycles
+            // periodBox
             // 
-            this.numberCycles.Location = new System.Drawing.Point(78, 177);
-            this.numberCycles.Name = "numberCycles";
-            this.numberCycles.Size = new System.Drawing.Size(38, 20);
-            this.numberCycles.TabIndex = 3;
-            this.numberCycles.Click += new System.EventHandler(this.CycleNumBox_Click);
-            this.numberCycles.TextChanged += new System.EventHandler(this.CycleNumBox_Click);
+            this.periodBox.Location = new System.Drawing.Point(78, 177);
+            this.periodBox.Name = "periodBox";
+            this.periodBox.Size = new System.Drawing.Size(38, 20);
+            this.periodBox.TabIndex = 3;
+            this.periodBox.Click += new System.EventHandler(this.CycleNumBox_Click);
+            this.periodBox.TextChanged += new System.EventHandler(this.CycleNumBox_Click);
             // 
             // label1
             // 
@@ -110,14 +110,14 @@
             this.label3.TabIndex = 6;
             this.label3.Text = "Phase";
             // 
-            // label4
+            // period
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(15, 180);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(38, 13);
-            this.label4.TabIndex = 7;
-            this.label4.Text = "CyclNr";
+            this.period.AutoSize = true;
+            this.period.Location = new System.Drawing.Point(15, 180);
+            this.period.Name = "period";
+            this.period.Size = new System.Drawing.Size(37, 13);
+            this.period.TabIndex = 7;
+            this.period.Text = "Period";
             // 
             // Send
             // 
@@ -171,16 +171,16 @@
             // 
             // ChartFirstServo
             // 
-            chartArea2.Name = "ChartArea1";
-            this.ChartFirstServo.ChartAreas.Add(chartArea2);
+            chartArea1.Name = "ChartArea1";
+            this.ChartFirstServo.ChartAreas.Add(chartArea1);
             this.ChartFirstServo.Location = new System.Drawing.Point(163, -3);
             this.ChartFirstServo.Name = "ChartFirstServo";
             this.ChartFirstServo.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.None;
-            series2.ChartArea = "ChartArea1";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series2.Name = "Series1";
-            series2.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
-            this.ChartFirstServo.Series.Add(series2);
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series1.Name = "Series1";
+            series1.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
+            this.ChartFirstServo.Series.Add(series1);
             this.ChartFirstServo.Size = new System.Drawing.Size(635, 196);
             this.ChartFirstServo.TabIndex = 13;
             this.ChartFirstServo.Text = "ChartFirstServo";
@@ -196,11 +196,11 @@
             this.Controls.Add(this.Kill);
             this.Controls.Add(this.Open);
             this.Controls.Add(this.Send);
-            this.Controls.Add(this.label4);
+            this.Controls.Add(this.period);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.numberCycles);
+            this.Controls.Add(this.periodBox);
             this.Controls.Add(this.phaseBox);
             this.Controls.Add(this.amplitudeBox);
             this.Controls.Add(this.frequencyBox);
@@ -218,11 +218,11 @@
         private System.Windows.Forms.TextBox frequencyBox;
         private System.Windows.Forms.TextBox amplitudeBox;
         private System.Windows.Forms.TextBox phaseBox;
-        private System.Windows.Forms.TextBox numberCycles;
+        private System.Windows.Forms.TextBox periodBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label period;
         private System.Windows.Forms.Button Send;
         private System.Windows.Forms.Button Open;
         private System.Windows.Forms.Button Kill;

@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Peristaltic_Hapric_Gui
+namespace Peristaltic_Haptic_Gui
 {
     public partial class PeristalticHapticActuator : Form
     {
@@ -28,7 +28,7 @@ namespace Peristaltic_Hapric_Gui
         private static double maxCyclNum = 100;
         private static double minCyclNum = 0;
 
-        private static double yAxisShift = amplitude / 2; 
+        private double yAxisShift => amplitude / 2; 
         public PeristalticHapticActuator()
         {
             InitializeComponent();
@@ -52,14 +52,14 @@ namespace Peristaltic_Hapric_Gui
             for (int i = 0; i <= cyclNum*1000; i++)
             {
                 var doubleCounter = Convert.ToDouble(i)/1000;
-                sinData.Points.AddXY(doubleCounter, ((amplitude/2) * Math.Sin(2 * Math.PI * fc * doubleCounter + phase)+ (amplitude/2))); 
+                sinData.Points.AddXY(doubleCounter, ((yAxisShift) * Math.Sin(2 * Math.PI * fc * doubleCounter + phase)+ (yAxisShift))); 
                 
             }
             ChartFirstServo.Series.Add(sinData);
             ChartFirstServo.ChartAreas[0].AxisX.Minimum = 0;
             ChartFirstServo.ChartAreas[0].AxisX.Maximum = cyclNum;
-            ChartFirstServo.ChartAreas[0].AxisY.Maximum = 100;
-            ChartFirstServo.ChartAreas[0].AxisY.Minimum = 0;
+            ChartFirstServo.ChartAreas[0].AxisY.Maximum = maxAmplitude;
+            ChartFirstServo.ChartAreas[0].AxisY.Minimum = minAmplitude;
             ChartFirstServo.ChartAreas[0].AxisY.LabelStyle.Format = "{###}%"; 
 
 

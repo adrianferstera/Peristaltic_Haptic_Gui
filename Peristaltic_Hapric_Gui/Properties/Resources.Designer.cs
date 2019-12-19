@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Peristaltic_Hapric_Gui.Properties
+namespace Peristaltic_Haptic_Gui.Properties
 {
 
 

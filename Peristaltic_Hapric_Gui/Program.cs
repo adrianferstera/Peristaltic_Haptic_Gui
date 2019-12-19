@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Peristaltic_Hapric_Gui
+namespace Peristaltic_Haptic_Gui
 {
     static class Program
     {

@@ -1,4 +1,4 @@
-﻿namespace Peristaltic_Hapric_Gui
+﻿namespace Peristaltic_Haptic_Gui
 {
     partial class PeristalticHapticActuator
     {

@@ -22,7 +22,7 @@ namespace Peristaltic_Haptic_Gui
 
         private static double phase = 0;
         private static double maxPhase = 2*Math.PI;
-        private static double minPhase = 0;
+        private static double minPhase = -2 * Math.PI;
 
         private static double period = 1;
         private static double maxPeriod = 100;
@@ -53,30 +53,38 @@ namespace Peristaltic_Haptic_Gui
             
             ChartFirstServo.Series.Clear();
             var waveForm = new System.Windows.Forms.DataVisualization.Charting.Series();
+            var xAxisWaveForm = new System.Windows.Forms.DataVisualization.Charting.Series();
+            for (int i = 0; i < period * 10; i++)
+            {
+                xAxisWaveForm.Points.AddXY(Convert.ToDouble(i) / 100, 0); 
+            }
             if (waveformType == WaveformTypes.Sine)
             {
-                waveForm = calculateSineWave();
+                waveForm = CalculateSineWave();
             }else if (waveformType == WaveformTypes.Triangle)
             {
                 waveForm = calculateTriangleWave(); 
             }
             ChartFirstServo.Series.Add(waveForm);
+            ChartFirstServo.Series.Add(xAxisWaveForm); 
             ChartFirstServo.ChartAreas[0].AxisX.Minimum = 0;
             ChartFirstServo.ChartAreas[0].AxisX.Maximum = period;
             ChartFirstServo.ChartAreas[0].AxisY.Maximum = maxAmplitude;
             ChartFirstServo.ChartAreas[0].AxisY.Minimum = minAmplitude;
             ChartFirstServo.ChartAreas[0].AxisY.LabelStyle.Format = "{###}%";
-            ChartFirstServo.ChartAreas[0].AxisX.LabelStyle.Format = "{0.00}";
+            ChartFirstServo.ChartAreas[0].AxisX.LabelStyle.Format = "{0.00}s";
+            ChartFirstServo.ChartAreas[0].AxisY.MajorGrid.Interval = 10;
+            ChartFirstServo.ChartAreas[0].AxisX.MajorGrid.Interval = 0.1;
         }
 
-        private System.Windows.Forms.DataVisualization.Charting.Series calculateSineWave()
+        private System.Windows.Forms.DataVisualization.Charting.Series CalculateSineWave()
         {
             var sinData = new System.Windows.Forms.DataVisualization.Charting.Series();
             sinData.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
             for (int i = 0; i <= period * 1000; i++)
             {
                 var doubleCounter = Convert.ToDouble(i) / 1000;
-                sinData.Points.AddXY(doubleCounter, ((yAxisShift) * Math.Sin(2 * Math.PI * fc * doubleCounter + phase) + (yAxisShift)));
+                sinData.Points.AddXY(doubleCounter, ((yAxisShift) * Math.Sin(2 * Math.PI * fc * doubleCounter + phase-Math.PI/2) + (yAxisShift)));
             }
 
             return sinData; 
@@ -177,7 +185,7 @@ namespace Peristaltic_Haptic_Gui
 
         }
 
-        private void sinRadioButton_CheckedChanged(object sender, EventArgs e)
+        private void SinRadioButton_CheckedChanged(object sender, EventArgs e)
         {
             if (sinRadioButton.Checked)
             {
@@ -188,7 +196,7 @@ namespace Peristaltic_Haptic_Gui
 
         }
 
-        private void triangleRadioButton_CheckedChanged(object sender, EventArgs e)
+        private void TriangleRadioButton_CheckedChanged(object sender, EventArgs e)
         {
             if (triangleRadioButton.Checked)
             {

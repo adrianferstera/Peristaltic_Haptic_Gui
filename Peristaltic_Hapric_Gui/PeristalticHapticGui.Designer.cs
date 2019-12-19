@@ -224,9 +224,9 @@
             this.periodUnit.AutoSize = true;
             this.periodUnit.Location = new System.Drawing.Point(122, 105);
             this.periodUnit.Name = "periodUnit";
-            this.periodUnit.Size = new System.Drawing.Size(22, 13);
+            this.periodUnit.Size = new System.Drawing.Size(12, 13);
             this.periodUnit.TabIndex = 17;
-            this.periodUnit.Text = "[   ]";
+            this.periodUnit.Text = "s";
             // 
             // sinRadioButton
             // 
@@ -238,7 +238,7 @@
             this.sinRadioButton.TabStop = true;
             this.sinRadioButton.Text = "Sine";
             this.sinRadioButton.UseVisualStyleBackColor = true;
-            this.sinRadioButton.CheckedChanged += new System.EventHandler(this.sinRadioButton_CheckedChanged);
+            this.sinRadioButton.CheckedChanged += new System.EventHandler(this.SinRadioButton_CheckedChanged);
             // 
             // triangleRadioButton
             // 
@@ -250,7 +250,7 @@
             this.triangleRadioButton.TabStop = true;
             this.triangleRadioButton.Text = "Triangle";
             this.triangleRadioButton.UseVisualStyleBackColor = true;
-            this.triangleRadioButton.CheckedChanged += new System.EventHandler(this.triangleRadioButton_CheckedChanged);
+            this.triangleRadioButton.CheckedChanged += new System.EventHandler(this.TriangleRadioButton_CheckedChanged);
             // 
             // WaveformLabel
             // 

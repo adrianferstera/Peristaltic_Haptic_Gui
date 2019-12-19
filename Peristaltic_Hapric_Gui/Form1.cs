@@ -13,9 +13,21 @@ namespace Peristaltic_Hapric_Gui
     public partial class PeristalticHapticActuator : Form
     {
         private static double fc = 1;
+        private static double maxFc = 5;
+        private static double minFc = 0;
+
         private static double amplitude = 100;
+        private static double maxAmplitude = 100;
+        private static double minAmplitude = 0;
+
         private static double phase = 0;
+        private static double maxPhase = 2*Math.PI;
+        private static double minPhase = 0;
+
         private static double cyclNum = 1;
+        private static double maxCyclNum = 100;
+        private static double minCyclNum = 0;
+
         private static double yAxisShift = amplitude / 2; 
         public PeristalticHapticActuator()
         {
@@ -55,25 +67,41 @@ namespace Peristaltic_Hapric_Gui
         private void FrequencyBox_Click(object sender, EventArgs e)
         {
             var value = frequencyBox.Text;
-            if (value.Length >0)
+           if (value.Length > 0)
             {
-                fc = Convert.ToDouble(value);
-                CalculateWaveform();
+                var result = double.TryParse(value, out var newfc);
+                if (result && newfc <= maxFc && newfc >= minFc)
+                {
+                    fc = newfc;
+                    CalculateWaveform();
+                }
             }
         }
         private void PhaseBox_Click(object sender, EventArgs e)
         {
             var value = phaseBox.Text;
-            phase = Convert.ToDouble(value);
-            CalculateWaveform();
+            if (value.Length > 0)
+            {
+                var result = double.TryParse(value, out var newPhase);
+                if (result && newPhase <= maxPhase && newPhase >= minPhase)
+                {
+                    phase = newPhase;
+                    CalculateWaveform();
+                }
+            }
         }
         private void AmplitudeBox_Click(object sender, EventArgs e)
         {
             var value = amplitudeBox.Text;
             if (value.Length > 0)
             {
-                amplitude = Convert.ToDouble(value);
-                CalculateWaveform();
+                var result = double.TryParse(value, out var newAmplitude);
+                if (result && newAmplitude <= maxAmplitude && newAmplitude >= minAmplitude)
+                {
+                    amplitude = newAmplitude;
+                    CalculateWaveform();
+                }
+                
             }
         }
         private void CycleNumBox_Click(object sender, EventArgs e)
@@ -81,8 +109,12 @@ namespace Peristaltic_Hapric_Gui
             var value = periodBox.Text;
             if (value.Length > 0)
             {
-                cyclNum = Convert.ToDouble(value);
-                CalculateWaveform();
+                var result = double.TryParse(value, out var newCyc);
+                if (result && newCyc <= maxCyclNum && newCyc >= minCyclNum)
+                {
+                    cyclNum = newCyc;
+                    CalculateWaveform();
+                }
             }
         }
 

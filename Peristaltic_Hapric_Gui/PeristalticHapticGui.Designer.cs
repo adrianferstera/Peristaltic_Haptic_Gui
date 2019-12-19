@@ -130,7 +130,7 @@
             // 
             this.Send.Location = new System.Drawing.Point(22, 308);
             this.Send.Name = "Send";
-            this.Send.Size = new System.Drawing.Size(113, 58);
+            this.Send.Size = new System.Drawing.Size(120, 58);
             this.Send.TabIndex = 8;
             this.Send.Text = "Send";
             this.Send.UseVisualStyleBackColor = true;
@@ -140,7 +140,7 @@
             // 
             this.Open.Location = new System.Drawing.Point(22, 250);
             this.Open.Name = "Open";
-            this.Open.Size = new System.Drawing.Size(113, 23);
+            this.Open.Size = new System.Drawing.Size(120, 23);
             this.Open.TabIndex = 9;
             this.Open.Text = "OpenConnection";
             this.Open.UseVisualStyleBackColor = true;
@@ -150,7 +150,7 @@
             // 
             this.Kill.Location = new System.Drawing.Point(22, 279);
             this.Kill.Name = "Kill";
-            this.Kill.Size = new System.Drawing.Size(113, 23);
+            this.Kill.Size = new System.Drawing.Size(120, 23);
             this.Kill.TabIndex = 10;
             this.Kill.Text = "Kill Connection";
             this.Kill.UseVisualStyleBackColor = true;
@@ -160,7 +160,7 @@
             // 
             this.Max.Location = new System.Drawing.Point(22, 372);
             this.Max.Name = "Max";
-            this.Max.Size = new System.Drawing.Size(113, 23);
+            this.Max.Size = new System.Drawing.Size(120, 23);
             this.Max.TabIndex = 11;
             this.Max.Text = "Donning Max";
             this.Max.UseVisualStyleBackColor = true;
@@ -170,7 +170,7 @@
             // 
             this.Min.Location = new System.Drawing.Point(22, 401);
             this.Min.Name = "Min";
-            this.Min.Size = new System.Drawing.Size(113, 23);
+            this.Min.Size = new System.Drawing.Size(120, 23);
             this.Min.TabIndex = 12;
             this.Min.Text = "Donning Min";
             this.Min.UseVisualStyleBackColor = true;

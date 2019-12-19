@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peristaltic_Hapric_Gui", "Peristaltic_Hapric_Gui\Peristaltic_Hapric_Gui.csproj", "{192FD8E4-7C53-43C3-9B04-CB8FE97E6D45}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peristaltic_Haptic_Gui", "Peristaltic_Hapric_Gui\Peristaltic_Haptic_Gui.csproj", "{192FD8E4-7C53-43C3-9B04-CB8FE97E6D45}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

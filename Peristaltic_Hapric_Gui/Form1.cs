@@ -24,9 +24,11 @@ namespace Peristaltic_Haptic_Gui
         private static double maxPhase = 2*Math.PI;
         private static double minPhase = 0;
 
-        private static double cyclNum = 1;
-        private static double maxCyclNum = 100;
-        private static double minCyclNum = 0;
+        private static double period = 1;
+        private static double maxPeriod = 100;
+        private static double minPeriod = 0;
+
+        private static WaveformTypes waveformType = WaveformTypes.Sine; 
 
         private double yAxisShift => amplitude / 2; 
         public PeristalticHapticActuator()
@@ -41,28 +43,58 @@ namespace Peristaltic_Haptic_Gui
             frequencyBox.Text = fc.ToString();
             amplitudeBox.Text = amplitude.ToString();
             phaseBox.Text = phase.ToString();
-            periodBox.Text = cyclNum.ToString(); 
+            periodBox.Text = period.ToString();
+            sinRadioButton.Checked = true; 
         }
 
         private void CalculateWaveform()
         {
-            var sinData = new System.Windows.Forms.DataVisualization.Charting.Series();
-            sinData.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+           
+            
             ChartFirstServo.Series.Clear();
-            for (int i = 0; i <= cyclNum*1000; i++)
+            var waveForm = new System.Windows.Forms.DataVisualization.Charting.Series();
+            if (waveformType == WaveformTypes.Sine)
             {
-                var doubleCounter = Convert.ToDouble(i)/1000;
-                sinData.Points.AddXY(doubleCounter, ((yAxisShift) * Math.Sin(2 * Math.PI * fc * doubleCounter + phase)+ (yAxisShift))); 
-                
+                waveForm = calculateSineWave();
+            }else if (waveformType == WaveformTypes.Triangle)
+            {
+                waveForm = calculateTriangleWave(); 
             }
-            ChartFirstServo.Series.Add(sinData);
+            ChartFirstServo.Series.Add(waveForm);
             ChartFirstServo.ChartAreas[0].AxisX.Minimum = 0;
-            ChartFirstServo.ChartAreas[0].AxisX.Maximum = cyclNum;
+            ChartFirstServo.ChartAreas[0].AxisX.Maximum = period;
             ChartFirstServo.ChartAreas[0].AxisY.Maximum = maxAmplitude;
             ChartFirstServo.ChartAreas[0].AxisY.Minimum = minAmplitude;
-            ChartFirstServo.ChartAreas[0].AxisY.LabelStyle.Format = "{###}%"; 
+            ChartFirstServo.ChartAreas[0].AxisY.LabelStyle.Format = "{###}%";
+            ChartFirstServo.ChartAreas[0].AxisX.LabelStyle.Format = "{0.00}";
+        }
 
+        private System.Windows.Forms.DataVisualization.Charting.Series calculateSineWave()
+        {
+            var sinData = new System.Windows.Forms.DataVisualization.Charting.Series();
+            sinData.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            for (int i = 0; i <= period * 1000; i++)
+            {
+                var doubleCounter = Convert.ToDouble(i) / 1000;
+                sinData.Points.AddXY(doubleCounter, ((yAxisShift) * Math.Sin(2 * Math.PI * fc * doubleCounter + phase) + (yAxisShift)));
+            }
 
+            return sinData; 
+        }
+        private System.Windows.Forms.DataVisualization.Charting.Series calculateTriangleWave()
+        {
+            var slope = amplitude*fc*2;
+            var triangleWave = new System.Windows.Forms.DataVisualization.Charting.Series();
+            triangleWave.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            triangleWave.Points.AddXY(0, 0);
+            for (int i = 0; i < period*fc; i++)
+            {
+                var gabs = 1.0/fc;
+                var counterDouble = Convert.ToDouble(i); 
+                triangleWave.Points.AddXY(counterDouble/fc + gabs/2, amplitude);
+                triangleWave.Points.AddXY(counterDouble/fc + gabs, 0);
+            }
+            return triangleWave; 
         }
         private void FrequencyBox_Click(object sender, EventArgs e)
         {
@@ -110,9 +142,9 @@ namespace Peristaltic_Haptic_Gui
             if (value.Length > 0)
             {
                 var result = double.TryParse(value, out var newCyc);
-                if (result && newCyc <= maxCyclNum && newCyc >= minCyclNum)
+                if (result && newCyc <= maxPeriod && newCyc >= minPeriod)
                 {
-                    cyclNum = newCyc;
+                    period = newCyc;
                     CalculateWaveform();
                 }
             }
@@ -138,6 +170,32 @@ namespace Peristaltic_Haptic_Gui
         private void KillButton_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void PeristalticHapticActuator_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void sinRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (sinRadioButton.Checked)
+            {
+                triangleRadioButton.Checked = false;
+                waveformType = WaveformTypes.Sine; 
+                CalculateWaveform();
+            }
+
+        }
+
+        private void triangleRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (triangleRadioButton.Checked)
+            {
+                sinRadioButton.Checked = false;
+                waveformType = WaveformTypes.Triangle;
+                CalculateWaveform();
+            }
         }
     }
 }

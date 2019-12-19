@@ -142,7 +142,7 @@
             this.Open.Name = "Open";
             this.Open.Size = new System.Drawing.Size(120, 23);
             this.Open.TabIndex = 9;
-            this.Open.Text = "OpenConnection";
+            this.Open.Text = "Connect";
             this.Open.UseVisualStyleBackColor = true;
             this.Open.Click += new System.EventHandler(this.OpenButton_Click);
             // 
@@ -152,7 +152,7 @@
             this.Kill.Name = "Kill";
             this.Kill.Size = new System.Drawing.Size(120, 23);
             this.Kill.TabIndex = 10;
-            this.Kill.Text = "Kill Connection";
+            this.Kill.Text = "Disconnect";
             this.Kill.UseVisualStyleBackColor = true;
             this.Kill.Click += new System.EventHandler(this.KillButton_Click);
             // 
@@ -215,9 +215,9 @@
             this.rad.AutoSize = true;
             this.rad.Location = new System.Drawing.Point(122, 75);
             this.rad.Name = "rad";
-            this.rad.Size = new System.Drawing.Size(22, 13);
+            this.rad.Size = new System.Drawing.Size(28, 13);
             this.rad.TabIndex = 16;
-            this.rad.Text = "rad";
+            this.rad.Text = "deg.";
             // 
             // periodUnit
             // 

@@ -20,9 +20,10 @@ namespace Peristaltic_Haptic_Gui
         private static double maxAmplitude = 100;
         private static double minAmplitude = 0;
 
-        private static double phase = 0;
-        private static double maxPhase = 2*Math.PI;
-        private static double minPhase = -2 * Math.PI;
+        private static double phase = 0; //in radian
+
+        private static double maxPhase = 360;
+        private static double minPhase = -360;
 
         private static double period = 1;
         private static double maxPeriod = 100;
@@ -44,19 +45,19 @@ namespace Peristaltic_Haptic_Gui
             amplitudeBox.Text = amplitude.ToString();
             phaseBox.Text = phase.ToString();
             periodBox.Text = period.ToString();
-            sinRadioButton.Checked = true; 
+            sinRadioButton.Checked = true;
+            Open.BackColor = Color.LightGreen;
+            Kill.BackColor = Color.OrangeRed; 
         }
 
         private void CalculateWaveform()
         {
-           
-            
             ChartFirstServo.Series.Clear();
             var waveForm = new System.Windows.Forms.DataVisualization.Charting.Series();
             var xAxisWaveForm = new System.Windows.Forms.DataVisualization.Charting.Series();
-            for (int i = 0; i < period * 10; i++)
+            for (int i = 0; i <= period * 10; i++)
             {
-                xAxisWaveForm.Points.AddXY(Convert.ToDouble(i) / 100, 0); 
+                xAxisWaveForm.Points.AddXY(Convert.ToDouble(i), 0); 
             }
             if (waveformType == WaveformTypes.Sine)
             {
@@ -65,16 +66,16 @@ namespace Peristaltic_Haptic_Gui
             {
                 waveForm = calculateTriangleWave(); 
             }
+            
             ChartFirstServo.Series.Add(waveForm);
-            ChartFirstServo.Series.Add(xAxisWaveForm); 
+            ChartFirstServo.Series.Add(xAxisWaveForm);
             ChartFirstServo.ChartAreas[0].AxisX.Minimum = 0;
             ChartFirstServo.ChartAreas[0].AxisX.Maximum = period;
             ChartFirstServo.ChartAreas[0].AxisY.Maximum = maxAmplitude;
             ChartFirstServo.ChartAreas[0].AxisY.Minimum = minAmplitude;
             ChartFirstServo.ChartAreas[0].AxisY.LabelStyle.Format = "{###}%";
-            ChartFirstServo.ChartAreas[0].AxisX.LabelStyle.Format = "{0.00}s";
+            ChartFirstServo.ChartAreas[0].AxisX.LabelStyle.Format = "{0.##}s";
             ChartFirstServo.ChartAreas[0].AxisY.MajorGrid.Interval = 10;
-            ChartFirstServo.ChartAreas[0].AxisX.MajorGrid.Interval = 0.1;
         }
 
         private System.Windows.Forms.DataVisualization.Charting.Series CalculateSineWave()
@@ -86,21 +87,21 @@ namespace Peristaltic_Haptic_Gui
                 var doubleCounter = Convert.ToDouble(i) / 1000;
                 sinData.Points.AddXY(doubleCounter, ((yAxisShift) * Math.Sin(2 * Math.PI * fc * doubleCounter + phase-Math.PI/2) + (yAxisShift)));
             }
-
             return sinData; 
         }
         private System.Windows.Forms.DataVisualization.Charting.Series calculateTriangleWave()
         {
-            var slope = amplitude*fc*2;
+            
             var triangleWave = new System.Windows.Forms.DataVisualization.Charting.Series();
             triangleWave.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            triangleWave.Points.AddXY(0, 0);
-            for (int i = 0; i < period*fc; i++)
+            var phaseInSec = phase * 0.5 / Math.PI;
+            triangleWave.Points.AddXY(0- phaseInSec, 0);
+            for (int i = 0; i < 2*period*fc; i++)
             {
                 var gabs = 1.0/fc;
-                var counterDouble = Convert.ToDouble(i); 
-                triangleWave.Points.AddXY(counterDouble/fc + gabs/2, amplitude);
-                triangleWave.Points.AddXY(counterDouble/fc + gabs, 0);
+                var counterDouble = Convert.ToDouble(i);
+                triangleWave.Points.AddXY(counterDouble/fc + gabs/2- phaseInSec, amplitude);
+                triangleWave.Points.AddXY(counterDouble/fc + gabs- phaseInSec, 0);
             }
             return triangleWave; 
         }
@@ -109,10 +110,10 @@ namespace Peristaltic_Haptic_Gui
             var value = frequencyBox.Text;
            if (value.Length > 0)
             {
-                var result = double.TryParse(value, out var newfc);
-                if (result && newfc <= maxFc && newfc >= minFc)
+                var result = double.TryParse(value, out var newFc);
+                if (result && newFc <= maxFc && newFc >= minFc)
                 {
-                    fc = newfc;
+                    fc = newFc;
                     CalculateWaveform();
                 }
             }
@@ -125,7 +126,9 @@ namespace Peristaltic_Haptic_Gui
                 var result = double.TryParse(value, out var newPhase);
                 if (result && newPhase <= maxPhase && newPhase >= minPhase)
                 {
-                    phase = newPhase;
+                    var convertedValue = newPhase * Math.PI / 180;//phase has to be in radians
+                    if (convertedValue < 0) phase = convertedValue + 2 * Math.PI;
+                    else phase = convertedValue;
                     CalculateWaveform();
                 }
             }

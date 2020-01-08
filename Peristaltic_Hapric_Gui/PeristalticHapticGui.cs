@@ -66,7 +66,7 @@ namespace Peristaltic_Haptic_Gui
             periodBox.Text = period.ToString();
             sinRadioButton.Checked = true;
             Open.BackColor = Color.LightGreen;
-            Kill.BackColor = Color.OrangeRed;
+            Kill.BackColor = Color.Tomato;
             if (availablePorts.Length > 0)
             {
                 comboBoxPort.Text = availablePorts[0];

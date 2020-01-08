@@ -52,6 +52,8 @@
             this.sinRadioButton = new System.Windows.Forms.RadioButton();
             this.triangleRadioButton = new System.Windows.Forms.RadioButton();
             this.WaveformLabel = new System.Windows.Forms.Label();
+            this.comboBoxPort = new System.Windows.Forms.ComboBox();
+            this.PortsLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.ChartFirstServo)).BeginInit();
             this.SuspendLayout();
             // 
@@ -128,7 +130,7 @@
             // 
             // Send
             // 
-            this.Send.Location = new System.Drawing.Point(22, 308);
+            this.Send.Location = new System.Drawing.Point(22, 323);
             this.Send.Name = "Send";
             this.Send.Size = new System.Drawing.Size(120, 58);
             this.Send.TabIndex = 8;
@@ -138,7 +140,7 @@
             // 
             // Open
             // 
-            this.Open.Location = new System.Drawing.Point(22, 250);
+            this.Open.Location = new System.Drawing.Point(22, 265);
             this.Open.Name = "Open";
             this.Open.Size = new System.Drawing.Size(120, 23);
             this.Open.TabIndex = 9;
@@ -148,7 +150,7 @@
             // 
             // Kill
             // 
-            this.Kill.Location = new System.Drawing.Point(22, 279);
+            this.Kill.Location = new System.Drawing.Point(22, 294);
             this.Kill.Name = "Kill";
             this.Kill.Size = new System.Drawing.Size(120, 23);
             this.Kill.TabIndex = 10;
@@ -158,7 +160,7 @@
             // 
             // Max
             // 
-            this.Max.Location = new System.Drawing.Point(22, 372);
+            this.Max.Location = new System.Drawing.Point(22, 387);
             this.Max.Name = "Max";
             this.Max.Size = new System.Drawing.Size(120, 23);
             this.Max.TabIndex = 11;
@@ -168,7 +170,7 @@
             // 
             // Min
             // 
-            this.Min.Location = new System.Drawing.Point(22, 401);
+            this.Min.Location = new System.Drawing.Point(22, 416);
             this.Min.Name = "Min";
             this.Min.Size = new System.Drawing.Size(120, 23);
             this.Min.TabIndex = 12;
@@ -180,7 +182,7 @@
             // 
             chartArea1.Name = "ChartArea1";
             this.ChartFirstServo.ChartAreas.Add(chartArea1);
-            this.ChartFirstServo.Location = new System.Drawing.Point(150, 0);
+            this.ChartFirstServo.Location = new System.Drawing.Point(150, -1);
             this.ChartFirstServo.Name = "ChartFirstServo";
             this.ChartFirstServo.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.None;
             series1.ChartArea = "ChartArea1";
@@ -231,7 +233,7 @@
             // sinRadioButton
             // 
             this.sinRadioButton.AutoSize = true;
-            this.sinRadioButton.Location = new System.Drawing.Point(32, 176);
+            this.sinRadioButton.Location = new System.Drawing.Point(32, 157);
             this.sinRadioButton.Name = "sinRadioButton";
             this.sinRadioButton.Size = new System.Drawing.Size(46, 17);
             this.sinRadioButton.TabIndex = 18;
@@ -243,7 +245,7 @@
             // triangleRadioButton
             // 
             this.triangleRadioButton.AutoSize = true;
-            this.triangleRadioButton.Location = new System.Drawing.Point(32, 199);
+            this.triangleRadioButton.Location = new System.Drawing.Point(32, 180);
             this.triangleRadioButton.Name = "triangleRadioButton";
             this.triangleRadioButton.Size = new System.Drawing.Size(63, 17);
             this.triangleRadioButton.TabIndex = 19;
@@ -255,17 +257,37 @@
             // WaveformLabel
             // 
             this.WaveformLabel.AutoSize = true;
-            this.WaveformLabel.Location = new System.Drawing.Point(19, 154);
+            this.WaveformLabel.Location = new System.Drawing.Point(19, 135);
             this.WaveformLabel.Name = "WaveformLabel";
             this.WaveformLabel.Size = new System.Drawing.Size(59, 13);
             this.WaveformLabel.TabIndex = 20;
             this.WaveformLabel.Text = "Waveform:";
+            // 
+            // comboBoxPort
+            // 
+            this.comboBoxPort.FormattingEnabled = true;
+            this.comboBoxPort.Location = new System.Drawing.Point(22, 238);
+            this.comboBoxPort.Name = "comboBoxPort";
+            this.comboBoxPort.Size = new System.Drawing.Size(73, 21);
+            this.comboBoxPort.TabIndex = 21;
+            this.comboBoxPort.DropDown += new System.EventHandler(this.comboBoxPort_DropDown);
+            // 
+            // PortsLabel
+            // 
+            this.PortsLabel.AutoSize = true;
+            this.PortsLabel.Location = new System.Drawing.Point(22, 219);
+            this.PortsLabel.Name = "PortsLabel";
+            this.PortsLabel.Size = new System.Drawing.Size(89, 13);
+            this.PortsLabel.TabIndex = 22;
+            this.PortsLabel.Text = "Connecting Port: ";
             // 
             // PeristalticHapticActuator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.PortsLabel);
+            this.Controls.Add(this.comboBoxPort);
             this.Controls.Add(this.WaveformLabel);
             this.Controls.Add(this.triangleRadioButton);
             this.Controls.Add(this.sinRadioButton);
@@ -320,6 +342,8 @@
         private System.Windows.Forms.RadioButton sinRadioButton;
         private System.Windows.Forms.RadioButton triangleRadioButton;
         private System.Windows.Forms.Label WaveformLabel;
+        private System.Windows.Forms.ComboBox comboBoxPort;
+        private System.Windows.Forms.Label PortsLabel;
     }
 }
 

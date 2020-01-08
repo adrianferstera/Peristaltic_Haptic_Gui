@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using HerkulexApi;
 
 namespace Peristaltic_Haptic_Gui
 {
@@ -29,14 +30,21 @@ namespace Peristaltic_Haptic_Gui
         private static double maxPeriod = 100;
         private static double minPeriod = 0;
 
-        private static WaveformTypes waveformType = WaveformTypes.Sine; 
+        private static double spacing = 100;
+        private System.Windows.Forms.DataVisualization.Charting.Series waveForm;
+        private List<HerkulexServo> myServos = new List<HerkulexServo>();
+        private HerkulexInterfaceConnector myHerkulexInterface;
+        private string[] availablePorts => HerkulexInterfaceConnector.AvailableSerialPorts();
 
-        private double yAxisShift => amplitude / 2; 
+        private static WaveformTypes waveformType = WaveformTypes.Sine;
+
+        private double yAxisShift => amplitude / 2;
         public PeristalticHapticActuator()
         {
             InitializeComponent();
             CalculateWaveform();
             StartupValues();
+
         }
 
         private void StartupValues()
@@ -47,26 +55,32 @@ namespace Peristaltic_Haptic_Gui
             periodBox.Text = period.ToString();
             sinRadioButton.Checked = true;
             Open.BackColor = Color.LightGreen;
-            Kill.BackColor = Color.OrangeRed; 
+            Kill.BackColor = Color.OrangeRed;
+            if (availablePorts.Length > 0)
+            {
+                comboBoxPort.Text = availablePorts[0];
+            }
+
         }
 
         private void CalculateWaveform()
         {
             ChartFirstServo.Series.Clear();
-            var waveForm = new System.Windows.Forms.DataVisualization.Charting.Series();
+            waveForm = new System.Windows.Forms.DataVisualization.Charting.Series();
             var xAxisWaveForm = new System.Windows.Forms.DataVisualization.Charting.Series();
             for (int i = 0; i <= period * 10; i++)
             {
-                xAxisWaveForm.Points.AddXY(Convert.ToDouble(i), 0); 
+                xAxisWaveForm.Points.AddXY(Convert.ToDouble(i), 0);
             }
             if (waveformType == WaveformTypes.Sine)
             {
                 waveForm = CalculateSineWave();
-            }else if (waveformType == WaveformTypes.Triangle)
-            {
-                waveForm = calculateTriangleWave(); 
             }
-            
+            else if (waveformType == WaveformTypes.Triangle)
+            {
+                waveForm = calculateTriangleWave();
+            }
+
             ChartFirstServo.Series.Add(waveForm);
             ChartFirstServo.Series.Add(xAxisWaveForm);
             ChartFirstServo.ChartAreas[0].AxisX.Minimum = 0;
@@ -85,30 +99,51 @@ namespace Peristaltic_Haptic_Gui
             for (int i = 0; i <= period * 1000; i++)
             {
                 var doubleCounter = Convert.ToDouble(i) / 1000;
-                sinData.Points.AddXY(doubleCounter, ((yAxisShift) * Math.Sin(2 * Math.PI * fc * doubleCounter + phase-Math.PI/2) + (yAxisShift)));
+                sinData.Points.AddXY(doubleCounter, ((yAxisShift) * Math.Sin(2 * Math.PI * fc * doubleCounter + phase - Math.PI / 2) + (yAxisShift)));
             }
-            return sinData; 
+            return sinData;
         }
         private System.Windows.Forms.DataVisualization.Charting.Series calculateTriangleWave()
         {
-            
+
             var triangleWave = new System.Windows.Forms.DataVisualization.Charting.Series();
             triangleWave.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
             var phaseInSec = phase * 0.5 / Math.PI;
-            triangleWave.Points.AddXY(0- phaseInSec, 0);
-            for (int i = 0; i < 2*period*fc; i++)
+            triangleWave.Points.AddXY(0 - phaseInSec, 0);
+            for (int i = 0; i < 2 * period * fc; i++)
             {
-                var gabs = 1.0/fc;
+                var gabs = 1.0 / fc;
                 var counterDouble = Convert.ToDouble(i);
-                triangleWave.Points.AddXY(counterDouble/fc + gabs/2- phaseInSec, amplitude);
-                triangleWave.Points.AddXY(counterDouble/fc + gabs- phaseInSec, 0);
+                for (int j = 1; j <= spacing; j++)
+                {
+                    triangleWave.Points.AddXY(counterDouble / fc - phaseInSec + (gabs / 2) / spacing * j, amplitude / spacing * j);
+                }
+                for (int j = 1; j <= spacing; j++)
+                {
+                    triangleWave.Points.AddXY(counterDouble / fc + gabs / 2 - phaseInSec + gabs / 2 / spacing * j, amplitude - amplitude / spacing * j);
+                }
+                // triangleWave.Points.AddXY(counterDouble/fc + gabs/2- phaseInSec, amplitude);
+                //triangleWave.Points.AddXY(counterDouble/fc + gabs- phaseInSec, 0);
+                var modifiedPoints = triangleWave.Points.ToList(); 
+                foreach (var el in triangleWave.Points)
+                {
+                    if (el.XValue<0 || el.XValue>period)
+                    {
+                        modifiedPoints.Remove(el); 
+                    }
+                }
+                triangleWave.Points.Clear();
+                foreach (var el in modifiedPoints)
+                {
+                    triangleWave.Points.Add(el); 
+                }
             }
-            return triangleWave; 
+            return triangleWave;
         }
         private void FrequencyBox_Click(object sender, EventArgs e)
         {
             var value = frequencyBox.Text;
-           if (value.Length > 0)
+            if (value.Length > 0)
             {
                 var result = double.TryParse(value, out var newFc);
                 if (result && newFc <= maxFc && newFc >= minFc)
@@ -144,7 +179,7 @@ namespace Peristaltic_Haptic_Gui
                     amplitude = newAmplitude;
                     CalculateWaveform();
                 }
-                
+
             }
         }
         private void CycleNumBox_Click(object sender, EventArgs e)
@@ -163,12 +198,60 @@ namespace Peristaltic_Haptic_Gui
 
         private void SendButton_Click(object sender, EventArgs e)
         {
+            var yPoints = waveForm.Points.Select(el => el.YValues[0]).ToList();
+            var xPoints = waveForm.Points.Select(el => el.XValue);
+            var yMax = yPoints.Max();
+            var yMin = xPoints.Min();
+            var yMaxValueIndex = yPoints.IndexOf(yMax);
+            var yMinValueIndex = yPoints.IndexOf(yMin);
+            var pointsList = new List<double>();
+            if (yMinValueIndex > yMaxValueIndex)
+            {
+                pointsList.Add(yMin);
+                pointsList.Add(yMax);
+            }
+            else
+            {
+                pointsList.Add(yMax);
+                pointsList.Add(yMin);
+            }
+            var playListServos = new List<double>();
+            for (int i = 0; i < period; i++)
+            {
+                playListServos.AddRange(pointsList);
+            }
+            if (Math.Abs(yPoints.First() - playListServos.First()) > 0.01)
+            {
+                playListServos.Insert(0, yPoints.First());
+            }
 
-            
+            if (Math.Abs(yPoints.Last() - playListServos.Last()) > 0.01)
+            {
+                playListServos.Add(yPoints.Last());
+            }
+
+            playListServos = playListServos.Select(el => el / 100).ToList(); 
+            var replayer = new Replayer(-60, 60);
+            replayer.Start(new List<double>(){playListServos.First()}, 100, myServos);
+            replayer.Start(playListServos, 400, myServos);
+
         }
         private void OpenButton_Click(object sender, EventArgs e)
         {
-
+            var port = comboBoxPort.Text;
+            if (port.Length == 0)
+            {
+                throw new InvalidOperationException("You have not selected a COM port yet or it was not found.");
+            }
+            myHerkulexInterface = new HerkulexInterfaceConnector(port, 57600);
+            myServos.Add(new HerkulexServo(219, myHerkulexInterface));
+            myServos.Add(new HerkulexServo(218, myHerkulexInterface));
+            foreach (var servo in myServos)
+            {
+                servo.TorqueOn();
+                servo.NeutralPosition = 60; 
+                servo.MoveToNeutralPosition();
+            }
         }
         private void MaxButton_Click(object sender, EventArgs e)
         {
@@ -180,7 +263,7 @@ namespace Peristaltic_Haptic_Gui
         }
         private void KillButton_Click(object sender, EventArgs e)
         {
-
+            myHerkulexInterface.Close();
         }
 
         private void PeristalticHapticActuator_Load(object sender, EventArgs e)
@@ -193,7 +276,7 @@ namespace Peristaltic_Haptic_Gui
             if (sinRadioButton.Checked)
             {
                 triangleRadioButton.Checked = false;
-                waveformType = WaveformTypes.Sine; 
+                waveformType = WaveformTypes.Sine;
                 CalculateWaveform();
             }
 
@@ -206,6 +289,16 @@ namespace Peristaltic_Haptic_Gui
                 sinRadioButton.Checked = false;
                 waveformType = WaveformTypes.Triangle;
                 CalculateWaveform();
+            }
+        }
+
+        private void comboBoxPort_DropDown(object sender, EventArgs e)
+        {
+            comboBoxPort.Items.Clear();
+            var ports = availablePorts;
+            foreach (var port in ports)
+            {
+                comboBoxPort.Items.Add(port);
             }
         }
     }

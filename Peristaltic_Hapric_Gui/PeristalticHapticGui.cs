@@ -53,7 +53,7 @@ namespace Peristaltic_Haptic_Gui
             InitializeComponent();
             CalculateWaveform();
             StartupValues();
-            DisableImportantButtons();
+            DisableDependantButtons();
         }
 
         private void StartupValues()
@@ -74,20 +74,32 @@ namespace Peristaltic_Haptic_Gui
 
         }
 
-        private void EnableImportantButtons()
+        private void EnableMainButtons()
+        {
+            Open.Enabled = true; 
+        }
+
+        private void DisableMainButtons()
+        {
+            Open.Enabled = false; 
+        }
+
+        private void EnableDependantButtons()
         {
             Kill.Enabled = true;
             Send.Enabled = true;
             Max.Enabled = true;
             Min.Enabled = true;
+            DisableMainButtons();
         }
 
-        private void DisableImportantButtons()
+        private void DisableDependantButtons()
         {
             Kill.Enabled = false;
             Send.Enabled = false;
             Max.Enabled = false;
             Min.Enabled = false;
+            EnableMainButtons();
         }
 
         private void CalculateWaveform()
@@ -299,7 +311,10 @@ namespace Peristaltic_Haptic_Gui
         }
         private void OpenButton_Click(object sender, EventArgs e)
         {
-            if(InitializeServos()) EnableImportantButtons();
+            if (InitializeServos())
+            {
+                EnableDependantButtons();
+            }
         }
 
         private bool InitializeServos()
@@ -377,7 +392,7 @@ namespace Peristaltic_Haptic_Gui
                 servo.Reboot();
             }
             myHerkulexInterface.Close();
-            DisableImportantButtons();
+            DisableDependantButtons();
         }
 
         private void PeristalticHapticActuator_Load(object sender, EventArgs e)

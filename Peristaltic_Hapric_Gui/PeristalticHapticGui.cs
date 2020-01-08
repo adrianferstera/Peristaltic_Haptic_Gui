@@ -14,14 +14,20 @@ namespace Peristaltic_Haptic_Gui
     public partial class PeristalticHapticActuator : Form
     {
         private static double fc = 1;
-        private static double maxFc = 5;
-        private static double minFc = 0;
+        private double maxFc = 5;
+        private double minFc = 0;
+
+        private const int DefaultMinDegree = -60;
+        private const int DefaultMaxDegree = 60;
+
 
         private static double amplitude = 100;
         private static double maxAmplitude = 100;
         private static double minAmplitude = 0;
+        private static int baudrate = 57600; 
 
         private static double phase = 0; //in radian
+        private double servoMaxSpeed = 0.00274; 
 
         private static double maxPhase = 360;
         private static double minPhase = -360;
@@ -29,6 +35,9 @@ namespace Peristaltic_Haptic_Gui
         private static double period = 1;
         private static double maxPeriod = 100;
         private static double minPeriod = 0;
+
+        private double minDegree;
+        private double maxDegree;
 
         private static double spacing = 100;
         private System.Windows.Forms.DataVisualization.Charting.Series waveForm;
@@ -44,11 +53,13 @@ namespace Peristaltic_Haptic_Gui
             InitializeComponent();
             CalculateWaveform();
             StartupValues();
-
+            DisableImportantButtons();
         }
 
         private void StartupValues()
         {
+            minDegree = -60; //only between -60 and 60, otherwise you are going to destroy the hardware
+            maxDegree = -minDegree;
             frequencyBox.Text = fc.ToString();
             amplitudeBox.Text = amplitude.ToString();
             phaseBox.Text = phase.ToString();
@@ -61,6 +72,22 @@ namespace Peristaltic_Haptic_Gui
                 comboBoxPort.Text = availablePorts[0];
             }
 
+        }
+
+        private void EnableImportantButtons()
+        {
+            Kill.Enabled = true;
+            Send.Enabled = true;
+            Max.Enabled = true;
+            Min.Enabled = true;
+        }
+
+        private void DisableImportantButtons()
+        {
+            Kill.Enabled = false;
+            Send.Enabled = false;
+            Max.Enabled = false;
+            Min.Enabled = false;
         }
 
         private void CalculateWaveform()
@@ -122,20 +149,18 @@ namespace Peristaltic_Haptic_Gui
                 {
                     triangleWave.Points.AddXY(counterDouble / fc + gabs / 2 - phaseInSec + gabs / 2 / spacing * j, amplitude - amplitude / spacing * j);
                 }
-                // triangleWave.Points.AddXY(counterDouble/fc + gabs/2- phaseInSec, amplitude);
-                //triangleWave.Points.AddXY(counterDouble/fc + gabs- phaseInSec, 0);
-                var modifiedPoints = triangleWave.Points.ToList(); 
+                var modifiedPoints = triangleWave.Points.ToList();
                 foreach (var el in triangleWave.Points)
                 {
-                    if (el.XValue<0 || el.XValue>period)
+                    if (el.XValue < 0 || el.XValue > period)
                     {
-                        modifiedPoints.Remove(el); 
+                        modifiedPoints.Remove(el);
                     }
                 }
                 triangleWave.Points.Clear();
                 foreach (var el in modifiedPoints)
                 {
-                    triangleWave.Points.Add(el); 
+                    triangleWave.Points.Add(el);
                 }
             }
             return triangleWave;
@@ -149,6 +174,7 @@ namespace Peristaltic_Haptic_Gui
                 if (result && newFc <= maxFc && newFc >= minFc)
                 {
                     fc = newFc;
+                    maxFc = Math.Ceiling(1 / (servoMaxSpeed * (Math.Abs(minDegree) + Math.Abs(maxDegree)) * 2));
                     CalculateWaveform();
                 }
             }
@@ -178,6 +204,8 @@ namespace Peristaltic_Haptic_Gui
                 {
                     amplitude = newAmplitude;
                     CalculateWaveform();
+                    maxDegree = DefaultMaxDegree * amplitude / 100;
+                    minDegree = DefaultMinDegree * amplitude / 100;
                 }
 
             }
@@ -196,7 +224,14 @@ namespace Peristaltic_Haptic_Gui
             }
         }
 
-        private void SendButton_Click(object sender, EventArgs e)
+        private static double Map2ServoValue(double yMax, double yMin, double xMax, double x)
+        {
+            var mappedValue = (yMax - yMin) / xMax * x + yMin;
+            return mappedValue;
+
+        }
+
+        private List<double> PrepareValuesForPlaying()
         {
             var yPoints = waveForm.Points.Select(el => el.YValues[0]).ToList();
             var xPoints = waveForm.Points.Select(el => el.XValue);
@@ -207,63 +242,142 @@ namespace Peristaltic_Haptic_Gui
             var pointsList = new List<double>();
             if (yMinValueIndex > yMaxValueIndex)
             {
-                pointsList.Add(yMin);
-                pointsList.Add(yMax);
+                pointsList.Add(Map2ServoValue(amplitude, maxAmplitude - amplitude, yMax, yMin));
+                pointsList.Add(Map2ServoValue(amplitude, maxAmplitude - amplitude, yMax, yMax));
             }
             else
             {
-                pointsList.Add(yMax);
-                pointsList.Add(yMin);
+                pointsList.Add(Map2ServoValue(amplitude, maxAmplitude - amplitude, yMax, yMax));
+                pointsList.Add(Map2ServoValue(amplitude, maxAmplitude - amplitude, yMax, yMin));
             }
             var playListServos = new List<double>();
-            for (int i = 0; i < period; i++)
+            for (int i = 0; i < period * fc; i++)
             {
                 playListServos.AddRange(pointsList);
             }
-            if (Math.Abs(yPoints.First() - playListServos.First()) > 0.01)
+            var firstValue = Map2ServoValue(maxAmplitude, maxAmplitude - amplitude, yMax, yPoints.First());
+            if (Math.Abs(firstValue - playListServos.First()) > 0.01)
             {
-                playListServos.Insert(0, yPoints.First());
-            }
 
-            if (Math.Abs(yPoints.Last() - playListServos.Last()) > 0.01)
+                playListServos.Insert(0, firstValue);
+            }
+            var lastValue = Map2ServoValue(maxAmplitude, maxAmplitude - amplitude, yMax, yPoints.Last());
+            if (Math.Abs(lastValue - playListServos.Last()) > 0.01)
             {
-                playListServos.Add(yPoints.Last());
+                playListServos.Add(lastValue);
             }
+            playListServos = playListServos.Select(el => el / 100).ToList();
+            return playListServos;
+        }
 
-            playListServos = playListServos.Select(el => el / 100).ToList(); 
-            var replayer = new Replayer(-60, 60);
-            replayer.Start(new List<double>(){playListServos.First()}, 100, myServos);
-            replayer.Start(playListServos, 400, myServos);
+        private void ChangeAccelerationAccordingToFrequency()
+        {
+            if (waveformType == WaveformTypes.Triangle)
+            {
+                foreach (var servo in myServos)
+                {
+                    servo.AccelerationRatio(servo.MinAccRatio);
+                }
+            }
+            else if (waveformType == WaveformTypes.Sine)
+            {
+                foreach (var servo in myServos)
+                {
+                    var accRatio = Convert.ToInt32((Convert.ToDouble(servo.MinAccRatio + 30 - servo.MaxAccRatio) / maxFc) * fc + servo.MaxAccRatio); //a litle bit treshold to minAccRatio 
+                    servo.AccelerationRatio(accRatio);
+                }
+            }
+        }
+        private void SendButton_Click(object sender, EventArgs e)
+        {
+            var replayer = new Replayer(minDegree, maxDegree);
+            var T = Convert.ToInt32(1 / fc * 1000); //T in ms
+            ChangeAccelerationAccordingToFrequency();
+            var playListServos = PrepareValuesForPlaying();
+            replayer.Start(playListServos, T/2, myServos);
 
         }
         private void OpenButton_Click(object sender, EventArgs e)
         {
+            if(InitializeServos()) EnableImportantButtons();
+        }
+
+        private bool InitializeServos()
+        {
             var port = comboBoxPort.Text;
             if (port.Length == 0)
             {
-                throw new InvalidOperationException("You have not selected a COM port yet or it was not found.");
+                var exception = new InvalidOperationException("Did not find the connection port.\n" +
+                                                              "If you have not connected the controller yet, please connect it.\n " +
+                                                              "If its connected, please check, if you have installed the correct drivers.\n" +
+                                                              $"If you have installed the drivers, please make sure that the baud rate is {baudrate} in the control panel.");
+                MessageBox.Show(exception.Message);
+                return false;
             }
-            myHerkulexInterface = new HerkulexInterfaceConnector(port, 57600);
-            myServos.Add(new HerkulexServo(219, myHerkulexInterface));
-            myServos.Add(new HerkulexServo(218, myHerkulexInterface));
+            try
+            {
+                myHerkulexInterface = new HerkulexInterfaceConnector(port, baudrate);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+                return false; 
+            }
+            myServos = new List<HerkulexServo>()
+                    {new HerkulexServo(219, myHerkulexInterface), new HerkulexServo(218, myHerkulexInterface)};
+
             foreach (var servo in myServos)
             {
                 servo.TorqueOn();
-                servo.NeutralPosition = 60; 
-                servo.MoveToNeutralPosition();
+                servo.NeutralPosition = Convert.ToInt32(maxDegree);
+                servoMaxSpeed = servo.MaxSpeed; 
+
             }
+
+            var taskList = new List<Task>();
+            foreach (var servo in myServos)
+            {
+                var myServoTask = new Task(() => servo.MoveToNeutralPosition());
+                taskList.Add(myServoTask);
+                myServoTask.Start();
+            }
+
+            Task.WaitAll(taskList.ToArray());
+            return true;
         }
+
         private void MaxButton_Click(object sender, EventArgs e)
         {
+            var replayer = new Replayer(minDegree, maxDegree);
 
+            var playListServos = new List<double>()
+            {
+                amplitude
+            };
+            playListServos = playListServos.Select(el => el / 100).ToList();
+            replayer.Start(playListServos, 1000, myServos, 0);
         }
         private void MinButton_Click(object sender, EventArgs e)
         {
 
+            var replayer = new Replayer(minDegree, maxDegree);
+
+            var playListServos = new List<double>()
+            {
+                maxAmplitude-amplitude
+            };
+            playListServos = playListServos.Select(el => el / 100).ToList();
+            replayer.Start(playListServos, 1000, myServos, 0);
         }
         private void KillButton_Click(object sender, EventArgs e)
         {
+            foreach (var servo in myServos)
+            {
+                servo.TorqueOff();
+                servo.Reboot();
+            }
             myHerkulexInterface.Close();
+            DisableImportantButtons();
         }
 
         private void PeristalticHapticActuator_Load(object sender, EventArgs e)

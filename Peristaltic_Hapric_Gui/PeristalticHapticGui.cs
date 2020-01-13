@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using HerkulexApi;
+using HerkulexGuiMapper;
 
 namespace Peristaltic_Haptic_Gui
 {
@@ -24,10 +23,12 @@ namespace Peristaltic_Haptic_Gui
         private static double amplitude = 100;
         private static double maxAmplitude = 100;
         private static double minAmplitude = 0;
-        private static int baudrate = 57600; 
+        private static int baudrate = 57600;
+        private double amplitudeInDec => amplitude / 100;
+        private double maxAmplitudeInDec => maxAmplitude / 100;
 
         private static double phase = 0; //in radian
-        private double servoMaxSpeed = 0.00274; 
+        private double servoMaxSpeed = 0.00274;
 
         private static double maxPhase = 360;
         private static double minPhase = -360;
@@ -60,10 +61,10 @@ namespace Peristaltic_Haptic_Gui
         {
             minDegree = -60; //only between -60 and 60, otherwise you are going to destroy the hardware
             maxDegree = -minDegree;
-            frequencyBox.Text = fc.ToString();
-            amplitudeBox.Text = amplitude.ToString();
-            phaseBox.Text = phase.ToString();
-            periodBox.Text = period.ToString();
+            frequencyBox.Text = fc.ToString(CultureInfo.CurrentCulture);
+            amplitudeBox.Text = amplitude.ToString(CultureInfo.CurrentCulture);
+            phaseBox.Text = phase.ToString(CultureInfo.CurrentCulture);
+            periodBox.Text = period.ToString(CultureInfo.CurrentCulture);
             sinRadioButton.Checked = true;
             Open.BackColor = Color.LightGreen;
             Kill.BackColor = Color.Tomato;
@@ -76,12 +77,12 @@ namespace Peristaltic_Haptic_Gui
 
         private void EnableMainButtons()
         {
-            Open.Enabled = true; 
+            Open.Enabled = true;
         }
 
         private void DisableMainButtons()
         {
-            Open.Enabled = false; 
+            Open.Enabled = false;
         }
 
         private void EnableDependantButtons()
@@ -236,52 +237,6 @@ namespace Peristaltic_Haptic_Gui
             }
         }
 
-        private static double Map2ServoValue(double yMax, double yMin, double xMax, double x)
-        {
-            var mappedValue = (yMax - yMin) / xMax * x + yMin;
-            return mappedValue;
-
-        }
-
-        private List<double> PrepareValuesForPlaying()
-        {
-            var yPoints = waveForm.Points.Select(el => el.YValues[0]).ToList();
-            var xPoints = waveForm.Points.Select(el => el.XValue);
-            var yMax = yPoints.Max();
-            var yMin = xPoints.Min();
-            var yMaxValueIndex = yPoints.IndexOf(yMax);
-            var yMinValueIndex = yPoints.IndexOf(yMin);
-            var pointsList = new List<double>();
-            if (yMinValueIndex > yMaxValueIndex)
-            {
-                pointsList.Add(Map2ServoValue(amplitude, maxAmplitude - amplitude, yMax, yMin));
-                pointsList.Add(Map2ServoValue(amplitude, maxAmplitude - amplitude, yMax, yMax));
-            }
-            else
-            {
-                pointsList.Add(Map2ServoValue(amplitude, maxAmplitude - amplitude, yMax, yMax));
-                pointsList.Add(Map2ServoValue(amplitude, maxAmplitude - amplitude, yMax, yMin));
-            }
-            var playListServos = new List<double>();
-            for (int i = 0; i < period * fc; i++)
-            {
-                playListServos.AddRange(pointsList);
-            }
-            var firstValue = Map2ServoValue(maxAmplitude, maxAmplitude - amplitude, yMax, yPoints.First());
-            if (Math.Abs(firstValue - playListServos.First()) > 0.01)
-            {
-
-                playListServos.Insert(0, firstValue);
-            }
-            var lastValue = Map2ServoValue(maxAmplitude, maxAmplitude - amplitude, yMax, yPoints.Last());
-            if (Math.Abs(lastValue - playListServos.Last()) > 0.01)
-            {
-                playListServos.Add(lastValue);
-            }
-            playListServos = playListServos.Select(el => el / 100).ToList();
-            return playListServos;
-        }
-
         private void ChangeAccelerationAccordingToFrequency()
         {
             if (waveformType == WaveformTypes.Triangle)
@@ -295,7 +250,8 @@ namespace Peristaltic_Haptic_Gui
             {
                 foreach (var servo in myServos)
                 {
-                    var accRatio = Convert.ToInt32((Convert.ToDouble(servo.MinAccRatio + 30 - servo.MaxAccRatio) / maxFc) * fc + servo.MaxAccRatio); //a litle bit treshold to minAccRatio 
+                    var accRatio = Convert.ToInt32((Convert.ToDouble(servo.MinAccRatio + 30 - servo.MaxAccRatio) 
+                                                    / maxFc) * fc + servo.MaxAccRatio); //a litle bit treshold to minAccRatio 
                     servo.AccelerationRatio(accRatio);
                 }
             }
@@ -303,10 +259,9 @@ namespace Peristaltic_Haptic_Gui
         private void SendButton_Click(object sender, EventArgs e)
         {
             var replayer = new Replayer(minDegree, maxDegree);
-            var T = Convert.ToInt32(1 / fc * 1000); //T in ms
             ChangeAccelerationAccordingToFrequency();
-            var playListServos = PrepareValuesForPlaying();
-            replayer.Start(playListServos, T/2, myServos);
+            var dataPointValues = waveForm.Points.Select(el => new Datapoint(el.XValue, el.YValues.First()/100)); 
+            replayer.StartSeries(dataPointValues, fc, maxAmplitudeInDec, amplitudeInDec, period, myServos);
 
         }
         private void OpenButton_Click(object sender, EventArgs e)
@@ -336,7 +291,7 @@ namespace Peristaltic_Haptic_Gui
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
-                return false; 
+                return false;
             }
             myServos = new List<HerkulexServo>()
                     {new HerkulexServo(219, myHerkulexInterface), new HerkulexServo(218, myHerkulexInterface)};
@@ -344,8 +299,8 @@ namespace Peristaltic_Haptic_Gui
             foreach (var servo in myServos)
             {
                 servo.TorqueOn();
-                servo.NeutralPosition = Convert.ToInt32(maxDegree);
-                servoMaxSpeed = servo.MaxSpeed; 
+                servo.NeutralPosition = Convert.ToInt32(minDegree);
+                servoMaxSpeed = servo.MaxSpeed;
 
             }
 
@@ -364,25 +319,12 @@ namespace Peristaltic_Haptic_Gui
         private void MaxButton_Click(object sender, EventArgs e)
         {
             var replayer = new Replayer(minDegree, maxDegree);
-
-            var playListServos = new List<double>()
-            {
-                amplitude
-            };
-            playListServos = playListServos.Select(el => el / 100).ToList();
-            replayer.Start(playListServos, 1000, myServos, 0);
+            replayer.Move2Position(amplitudeInDec, myServos);
         }
         private void MinButton_Click(object sender, EventArgs e)
         {
-
             var replayer = new Replayer(minDegree, maxDegree);
-
-            var playListServos = new List<double>()
-            {
-                maxAmplitude-amplitude
-            };
-            playListServos = playListServos.Select(el => el / 100).ToList();
-            replayer.Start(playListServos, 1000, myServos, 0);
+            replayer.Move2Position(maxAmplitudeInDec - amplitudeInDec, myServos);
         }
         private void KillButton_Click(object sender, EventArgs e)
         {

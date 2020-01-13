@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peristaltic_Haptic_Gui", "Peristaltic_Hapric_Gui\Peristaltic_Haptic_Gui.csproj", "{192FD8E4-7C53-43C3-9B04-CB8FE97E6D45}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HerkulexApi", "..\HerkulexApi\HerkulexApi\HerkulexApi.csproj", "{2D16EFA4-A732-47C5-B19B-B77893B3FF59}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HerkulexGuiMapper", "..\HerkulexApi\HerkulexGuiMapper\HerkulexGuiMapper.csproj", "{C54C612D-46F9-4C41-8664-59714700F511}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{192FD8E4-7C53-43C3-9B04-CB8FE97E6D45}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{192FD8E4-7C53-43C3-9B04-CB8FE97E6D45}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{192FD8E4-7C53-43C3-9B04-CB8FE97E6D45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D16EFA4-A732-47C5-B19B-B77893B3FF59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D16EFA4-A732-47C5-B19B-B77893B3FF59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D16EFA4-A732-47C5-B19B-B77893B3FF59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D16EFA4-A732-47C5-B19B-B77893B3FF59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C54C612D-46F9-4C41-8664-59714700F511}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C54C612D-46F9-4C41-8664-59714700F511}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C54C612D-46F9-4C41-8664-59714700F511}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C54C612D-46F9-4C41-8664-59714700F511}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

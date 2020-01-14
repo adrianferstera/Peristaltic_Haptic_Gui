@@ -243,7 +243,15 @@ namespace Peristaltic_Haptic_Gui
             {
                 foreach (var servo in myServos)
                 {
-                    servo.AccelerationRatio(servo.MinAccRatio);
+                    try
+                    {
+                        servo.AccelerationRatio(servo.MinAccRatio);
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(e.Message);
+                    }
+                    
                 }
             }
             else if (waveformType == WaveformTypes.Sine)
@@ -260,8 +268,16 @@ namespace Peristaltic_Haptic_Gui
         {
             var replayer = new Replayer(minDegree, maxDegree);
             ChangeAccelerationAccordingToFrequency();
-            var dataPointValues = waveForm.Points.Select(el => new Datapoint(el.XValue, el.YValues.First()/100)); 
-            replayer.StartSeries(dataPointValues, fc, maxAmplitudeInDec, amplitudeInDec, period, myServos);
+            var dataPointValues = waveForm.Points.Select(el => new Datapoint(el.XValue, el.YValues.First()/100));
+            try
+            {
+                replayer.StartSeries(dataPointValues, fc, maxAmplitudeInDec, amplitudeInDec, period, myServos);
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message);
+            }
+            
 
         }
         private void OpenButton_Click(object sender, EventArgs e)
@@ -286,15 +302,40 @@ namespace Peristaltic_Haptic_Gui
             }
             try
             {
-                myHerkulexInterface = new HerkulexInterfaceConnector(port, baudrate);
+                if (myHerkulexInterface == null)
+                {
+                    myHerkulexInterface = new HerkulexInterfaceConnector(port, baudrate);
+                }
+                else
+                {
+                    myHerkulexInterface.Reopen();
+                }
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
                 return false;
             }
+
             myServos = new List<HerkulexServo>()
-                    {new HerkulexServo(219, myHerkulexInterface), new HerkulexServo(218, myHerkulexInterface)};
+                {new HerkulexServo(219, myHerkulexInterface), new HerkulexServo(218, myHerkulexInterface)};
+            try
+            {
+                foreach (var myServo in myServos)
+                {
+                    myServo.Status();
+                }
+            }
+            catch (TimeoutException e)
+            {
+                MessageBox.Show(e.Message);
+                return false;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+                return false;
+            }
 
             foreach (var servo in myServos)
             {
@@ -319,12 +360,28 @@ namespace Peristaltic_Haptic_Gui
         private void MaxButton_Click(object sender, EventArgs e)
         {
             var replayer = new Replayer(minDegree, maxDegree);
-            replayer.Move2Position(amplitudeInDec, myServos);
+            try
+            {
+                replayer.Move2Position(amplitudeInDec, myServos);
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message);
+            }
+            
         }
         private void MinButton_Click(object sender, EventArgs e)
         {
             var replayer = new Replayer(minDegree, maxDegree);
-            replayer.Move2Position(maxAmplitudeInDec - amplitudeInDec, myServos);
+            try
+            {
+                replayer.Move2Position(maxAmplitudeInDec - amplitudeInDec, myServos);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message); 
+            }
+           
         }
         private void KillButton_Click(object sender, EventArgs e)
         {

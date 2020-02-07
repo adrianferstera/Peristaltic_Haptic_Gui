@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using HerkulexApi;
 using HerkulexGuiMapper;
+using Peristaltic_Hapric_Gui;
 
 namespace Peristaltic_Haptic_Gui
 {
@@ -23,11 +24,11 @@ namespace Peristaltic_Haptic_Gui
         private static double amplitude = 100;
         private static double maxAmplitude = 100;
         private static double minAmplitude = 0;
-        private static int baudrate = 57600;
+        private static int baudrate = 115200;
         private double amplitudeInDec => amplitude / 100;
         private double maxAmplitudeInDec => maxAmplitude / 100;
 
-        private static double phase = 0; //in radian
+        // private static double phase = 0; //in radian
         private double servoMaxSpeed = 0.00274;
 
         private static double maxPhase = 360;
@@ -39,50 +40,65 @@ namespace Peristaltic_Haptic_Gui
 
         private double minDegree;
         private double maxDegree;
+        private string[] selectedServoPorts => selectedServoPortsList.ToArray();
+        private List<string> selectedServoPortsList;
 
-        private static double spacing = 100;
+        //private static double spacing = 100;
         private System.Windows.Forms.DataVisualization.Charting.Series waveForm;
+        private List<RadioButton> radioButtonList;
         private List<HerkulexServo> myServos = new List<HerkulexServo>();
-        private HerkulexInterfaceConnector myHerkulexInterface;
-        private string[] availablePorts => HerkulexInterfaceConnector.AvailableSerialPorts();
+        private HerkulexInterfaceConnector myHerkulexInterface12;
+        private HerkulexInterfaceConnector myHerkulexInterface34;
+        private HerkulexInterfaceConnector myHerkulexInterface56;
+        private HerkulexInterfaceConnector myHerkulexInterface78;
+        private HerkulexInterfaceConnector BatteryReader;
 
-        private static WaveformTypes waveformType = WaveformTypes.Sine;
+        private List<HerkulexInterfaceConnector> myConnectors;
+        //private string[] availablePorts => HerkulexInterfaceConnector.AvailableSerialPorts();
 
-        private double yAxisShift => amplitude / 2;
+        private static WaveformType waveformType = WaveformType.Sine;
+        private HerkulexComPortSelection selectedComPorts;
+
         public PeristalticHapticActuator()
         {
             InitializeComponent();
-            CalculateWaveform();
             StartupValues();
+            CalculateWaveform();
             DisableDependantButtons();
+
         }
 
         private void StartupValues()
         {
+            radioButtonList = new List<RadioButton>()
+            {
+                triangleRadioButton, sinRadioButton, sineTriangleRadioButton, triangleRadioButton,
+                negativeSawtoothRadioButton, positiveSawtoothRadioButton
+            };
             minDegree = -60; //only between -60 and 60, otherwise you are going to destroy the hardware
             maxDegree = -minDegree;
             frequencyBox.Text = fc.ToString(CultureInfo.CurrentCulture);
             amplitudeBox.Text = amplitude.ToString(CultureInfo.CurrentCulture);
-            phaseBox.Text = phase.ToString(CultureInfo.CurrentCulture);
+            //  phaseBox.Text = phase.ToString(CultureInfo.CurrentCulture);
             periodBox.Text = period.ToString(CultureInfo.CurrentCulture);
             sinRadioButton.Checked = true;
             Open.BackColor = Color.LightGreen;
             Kill.BackColor = Color.Tomato;
-            if (availablePorts.Length > 0)
-            {
-                comboBoxPort.Text = availablePorts[0];
-            }
-
+            selectedComPorts = new HerkulexComPortSelection("", "", "", "", "");
+            myConnectors = new List<HerkulexInterfaceConnector>()
+                { myHerkulexInterface12, myHerkulexInterface34, myHerkulexInterface56, myHerkulexInterface78 };
         }
 
         private void EnableMainButtons()
         {
             Open.Enabled = true;
+            connectingPortsButton.Enabled = true;
         }
 
         private void DisableMainButtons()
         {
             Open.Enabled = false;
+            connectingPortsButton.Enabled = false;
         }
 
         private void EnableDependantButtons()
@@ -107,20 +123,15 @@ namespace Peristaltic_Haptic_Gui
         {
             ChartFirstServo.Series.Clear();
             waveForm = new System.Windows.Forms.DataVisualization.Charting.Series();
+            waveForm.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            waveForm.BorderWidth = 2;
             var xAxisWaveForm = new System.Windows.Forms.DataVisualization.Charting.Series();
             for (int i = 0; i <= period * 10; i++)
             {
                 xAxisWaveForm.Points.AddXY(Convert.ToDouble(i), 0);
             }
-            if (waveformType == WaveformTypes.Sine)
-            {
-                waveForm = CalculateSineWave();
-            }
-            else if (waveformType == WaveformTypes.Triangle)
-            {
-                waveForm = calculateTriangleWave();
-            }
-
+            var generatedWaveForm = WaveformGenerator.Generate(waveformType, fc, period, amplitude, maxAmplitude);
+            foreach (var el in generatedWaveForm) waveForm.Points.AddXY(el.xValue, el.yValue);
             ChartFirstServo.Series.Add(waveForm);
             ChartFirstServo.Series.Add(xAxisWaveForm);
             ChartFirstServo.ChartAreas[0].AxisX.Minimum = 0;
@@ -132,52 +143,6 @@ namespace Peristaltic_Haptic_Gui
             ChartFirstServo.ChartAreas[0].AxisY.MajorGrid.Interval = 10;
         }
 
-        private System.Windows.Forms.DataVisualization.Charting.Series CalculateSineWave()
-        {
-            var sinData = new System.Windows.Forms.DataVisualization.Charting.Series();
-            sinData.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            for (int i = 0; i <= period * 1000; i++)
-            {
-                var doubleCounter = Convert.ToDouble(i) / 1000;
-                sinData.Points.AddXY(doubleCounter, ((yAxisShift) * Math.Sin(2 * Math.PI * fc * doubleCounter + phase - Math.PI / 2) + (yAxisShift)));
-            }
-            return sinData;
-        }
-        private System.Windows.Forms.DataVisualization.Charting.Series calculateTriangleWave()
-        {
-
-            var triangleWave = new System.Windows.Forms.DataVisualization.Charting.Series();
-            triangleWave.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            var phaseInSec = phase * 0.5 / Math.PI;
-            triangleWave.Points.AddXY(0 - phaseInSec, 0);
-            for (int i = 0; i < 2 * period * fc; i++)
-            {
-                var gabs = 1.0 / fc;
-                var counterDouble = Convert.ToDouble(i);
-                for (int j = 1; j <= spacing; j++)
-                {
-                    triangleWave.Points.AddXY(counterDouble / fc - phaseInSec + (gabs / 2) / spacing * j, amplitude / spacing * j);
-                }
-                for (int j = 1; j <= spacing; j++)
-                {
-                    triangleWave.Points.AddXY(counterDouble / fc + gabs / 2 - phaseInSec + gabs / 2 / spacing * j, amplitude - amplitude / spacing * j);
-                }
-                var modifiedPoints = triangleWave.Points.ToList();
-                foreach (var el in triangleWave.Points)
-                {
-                    if (el.XValue < 0 || el.XValue > period)
-                    {
-                        modifiedPoints.Remove(el);
-                    }
-                }
-                triangleWave.Points.Clear();
-                foreach (var el in modifiedPoints)
-                {
-                    triangleWave.Points.Add(el);
-                }
-            }
-            return triangleWave;
-        }
         private void FrequencyBox_Click(object sender, EventArgs e)
         {
             var value = frequencyBox.Text;
@@ -192,21 +157,21 @@ namespace Peristaltic_Haptic_Gui
                 }
             }
         }
-        private void PhaseBox_Click(object sender, EventArgs e)
-        {
-            var value = phaseBox.Text;
-            if (value.Length > 0)
-            {
-                var result = double.TryParse(value, out var newPhase);
-                if (result && newPhase <= maxPhase && newPhase >= minPhase)
-                {
-                    var convertedValue = newPhase * Math.PI / 180;//phase has to be in radians
-                    if (convertedValue < 0) phase = convertedValue + 2 * Math.PI;
-                    else phase = convertedValue;
-                    CalculateWaveform();
-                }
-            }
-        }
+        /* private void PhaseBox_Click(object sender, EventArgs e)
+         {
+             var value = phaseBox.Text;
+             if (value.Length > 0)
+             {
+                 var result = double.TryParse(value, out var newPhase);
+                 if (result && newPhase <= maxPhase && newPhase >= minPhase)
+                 {
+                     var convertedValue = newPhase * Math.PI / 180;//phase has to be in radians
+                     if (convertedValue < 0) phase = convertedValue + 2 * Math.PI;
+                     else phase = convertedValue;
+                     CalculateWaveform();
+                 }
+             }
+         }*/
         private void AmplitudeBox_Click(object sender, EventArgs e)
         {
             var value = amplitudeBox.Text;
@@ -236,48 +201,19 @@ namespace Peristaltic_Haptic_Gui
                 }
             }
         }
-
-        private void ChangeAccelerationAccordingToFrequency()
-        {
-            if (waveformType == WaveformTypes.Triangle)
-            {
-                foreach (var servo in myServos)
-                {
-                    try
-                    {
-                        servo.AccelerationRatio(servo.MinAccRatio);
-                    }
-                    catch (Exception e)
-                    {
-                        MessageBox.Show(e.Message);
-                    }
-                    
-                }
-            }
-            else if (waveformType == WaveformTypes.Sine)
-            {
-                foreach (var servo in myServos)
-                {
-                    var accRatio = Convert.ToInt32((Convert.ToDouble(servo.MinAccRatio + 30 - servo.MaxAccRatio) 
-                                                    / maxFc) * fc + servo.MaxAccRatio); //a litle bit treshold to minAccRatio 
-                    servo.AccelerationRatio(accRatio);
-                }
-            }
-        }
         private void SendButton_Click(object sender, EventArgs e)
         {
             var replayer = new Replayer(minDegree, maxDegree);
-            ChangeAccelerationAccordingToFrequency();
-            var dataPointValues = waveForm.Points.Select(el => new Datapoint(el.XValue, el.YValues.First()/100));
+            var dataPointValues = waveForm.Points.Select(el => new Datapoint(el.XValue, el.YValues.First() / 100));
             try
             {
-                replayer.StartSeries(dataPointValues, fc, maxAmplitudeInDec, amplitudeInDec, period, myServos);
+                replayer.StartSeries(waveformType, fc, maxAmplitudeInDec, amplitudeInDec, period, myServos);
             }
             catch (Exception exception)
             {
                 MessageBox.Show(exception.Message);
             }
-            
+
 
         }
         private void OpenButton_Click(object sender, EventArgs e)
@@ -290,8 +226,7 @@ namespace Peristaltic_Haptic_Gui
 
         private bool InitializeServos()
         {
-            var port = comboBoxPort.Text;
-            if (port.Length == 0)
+            if (selectedComPorts == null)
             {
                 var exception = new InvalidOperationException("Did not find the connection port.\n" +
                                                               "If you have not connected the controller yet, please connect it.\n " +
@@ -302,28 +237,52 @@ namespace Peristaltic_Haptic_Gui
             }
             try
             {
-                if (myHerkulexInterface == null)
+                for (int i = 0; i < myConnectors.Count; i++)
                 {
-                    myHerkulexInterface = new HerkulexInterfaceConnector(port, baudrate);
+                    if (selectedServoPortsList[i].Length > 0)
+                    {
+                        if (myConnectors[i] == null)
+                        {
+                            myConnectors[i] = new HerkulexInterfaceConnector(selectedServoPorts[i], baudrate);
+                        }
+                        else
+                        {
+                            myConnectors[i].Reopen();
+                        }
+                    }
+                    else
+                    {
+                        var exception = new InvalidOperationException("You did not selected all COM-ports.");
+                        throw exception;
+
+                    }
                 }
-                else
-                {
-                    myHerkulexInterface.Reopen();
-                }
+
             }
             catch (Exception e)
             {
+                KillAllConnectors();
                 MessageBox.Show(e.Message);
                 return false;
             }
 
             myServos = new List<HerkulexServo>()
-                {new HerkulexServo(219, myHerkulexInterface), new HerkulexServo(218, myHerkulexInterface)};
+            {
+                new HerkulexServo(1, myHerkulexInterface12), new HerkulexServo(2, myHerkulexInterface12),
+                new HerkulexServo(3, myHerkulexInterface34),new HerkulexServo(4, myHerkulexInterface34),
+                new HerkulexServo(5, myHerkulexInterface56),new HerkulexServo(6, myHerkulexInterface56),
+                new HerkulexServo(7, myHerkulexInterface78),new HerkulexServo(8, myHerkulexInterface78)
+            };
             try
             {
                 foreach (var myServo in myServos)
                 {
-                    myServo.Status();
+                    var status = myServo.Status();
+                    if (status)
+                    {
+                        myServo.SetColor(HerkulexColor.GREEN);
+                    }
+                    else myServo.SetColor(HerkulexColor.RED);
                 }
             }
             catch (TimeoutException e)
@@ -368,7 +327,7 @@ namespace Peristaltic_Haptic_Gui
             {
                 MessageBox.Show(exception.Message);
             }
-            
+
         }
         private void MinButton_Click(object sender, EventArgs e)
         {
@@ -379,9 +338,9 @@ namespace Peristaltic_Haptic_Gui
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message); 
+                MessageBox.Show(ex.Message);
             }
-           
+
         }
         private void KillButton_Click(object sender, EventArgs e)
         {
@@ -390,8 +349,22 @@ namespace Peristaltic_Haptic_Gui
                 servo.TorqueOff();
                 servo.Reboot();
             }
-            myHerkulexInterface.Close();
+            KillAllConnectors();
             DisableDependantButtons();
+        }
+
+        private void KillAllConnectors()
+        {
+            foreach (var port in myConnectors)
+            {
+                if (port != null)
+                {
+                    if (port.IsOpen)
+                    {
+                        port.Close();
+                    }
+                }
+            }
         }
 
         private void PeristalticHapticActuator_Load(object sender, EventArgs e)
@@ -403,8 +376,8 @@ namespace Peristaltic_Haptic_Gui
         {
             if (sinRadioButton.Checked)
             {
-                triangleRadioButton.Checked = false;
-                waveformType = WaveformTypes.Sine;
+                UncheckAllRadioButtonsExcept(sinRadioButton);
+                waveformType = WaveformType.Sine;
                 CalculateWaveform();
             }
 
@@ -414,20 +387,83 @@ namespace Peristaltic_Haptic_Gui
         {
             if (triangleRadioButton.Checked)
             {
-                sinRadioButton.Checked = false;
-                waveformType = WaveformTypes.Triangle;
+                UncheckAllRadioButtonsExcept(triangleRadioButton);
+                waveformType = WaveformType.Triangle;
+                CalculateWaveform();
+            }
+        }
+        private void UncheckAllRadioButtonsExcept(RadioButton button)
+        {
+            foreach (var el in radioButtonList)
+            {
+                if (el != button) el.Checked = false;
+            }
+        }
+
+        private void sineTriangleRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (sineTriangleRadioButton.Checked)
+            {
+                UncheckAllRadioButtonsExcept(sineTriangleRadioButton);
+                waveformType = WaveformType.SineTriangle;
                 CalculateWaveform();
             }
         }
 
-        private void comboBoxPort_DropDown(object sender, EventArgs e)
+        private void triangleSineRadioButton_CheckedChanged(object sender, EventArgs e)
         {
-            comboBoxPort.Items.Clear();
-            var ports = availablePorts;
-            foreach (var port in ports)
+            if (triangleSineRadioButton.Checked)
             {
-                comboBoxPort.Items.Add(port);
+                UncheckAllRadioButtonsExcept(triangleSineRadioButton);
+                waveformType = WaveformType.TriangleSine;
+                CalculateWaveform();
             }
         }
+
+        private void positiveSawtoothRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (positiveSawtoothRadioButton.Checked)
+            {
+                UncheckAllRadioButtonsExcept(positiveSawtoothRadioButton);
+                waveformType = WaveformType.PositiveSawtooth;
+                CalculateWaveform();
+            }
+        }
+
+        private void negativeSawtoothRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (negativeSawtoothRadioButton.Checked)
+            {
+                UncheckAllRadioButtonsExcept(negativeSawtoothRadioButton);
+                waveformType = WaveformType.NegativeSawtooth;
+                CalculateWaveform();
+            }
+        }
+
+        private void connectingPortsButton_Click(object sender, EventArgs e)
+        {
+            var settingsWindow = new ConnectingSettings(selectedComPorts);
+            settingsWindow.ShowDialog();
+            selectedComPorts = settingsWindow.SelectedPorts;
+            selectedServoPortsList = new List<string>()
+            {
+                selectedComPorts.port12, selectedComPorts.port34,
+                selectedComPorts.port56, selectedComPorts.port78
+            };
+            com1.Text = selectedComPorts.port12;
+            com2.Text = selectedComPorts.port34;
+            com3.Text = selectedComPorts.port56;
+            com4.Text = selectedComPorts.port78;
+        }
+        //* private void comboBoxPort_DropDown(object sender, EventArgs e)
+        /* {
+             comboBoxPort.Items.Clear();
+             var ports = availablePorts;
+             foreach (var port in ports)
+             {
+                 comboBoxPort.Items.Add(port);
+             }
+         }*/
+
     }
 }

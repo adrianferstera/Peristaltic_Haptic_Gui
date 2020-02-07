@@ -33,11 +33,9 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PeristalticHapticActuator));
             this.frequencyBox = new System.Windows.Forms.TextBox();
             this.amplitudeBox = new System.Windows.Forms.TextBox();
-            this.phaseBox = new System.Windows.Forms.TextBox();
             this.periodBox = new System.Windows.Forms.TextBox();
             this.frequency = new System.Windows.Forms.Label();
             this.amplitudeLabel = new System.Windows.Forms.Label();
-            this.phaseLabel = new System.Windows.Forms.Label();
             this.periodLabel = new System.Windows.Forms.Label();
             this.Send = new System.Windows.Forms.Button();
             this.Open = new System.Windows.Forms.Button();
@@ -47,13 +45,23 @@
             this.ChartFirstServo = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.Hz = new System.Windows.Forms.Label();
             this.amplitudeUnit = new System.Windows.Forms.Label();
-            this.rad = new System.Windows.Forms.Label();
             this.periodUnit = new System.Windows.Forms.Label();
             this.sinRadioButton = new System.Windows.Forms.RadioButton();
             this.triangleRadioButton = new System.Windows.Forms.RadioButton();
             this.WaveformLabel = new System.Windows.Forms.Label();
-            this.comboBoxPort = new System.Windows.Forms.ComboBox();
-            this.PortsLabel = new System.Windows.Forms.Label();
+            this.sineTriangleRadioButton = new System.Windows.Forms.RadioButton();
+            this.triangleSineRadioButton = new System.Windows.Forms.RadioButton();
+            this.positiveSawtoothRadioButton = new System.Windows.Forms.RadioButton();
+            this.negativeSawtoothRadioButton = new System.Windows.Forms.RadioButton();
+            this.connectingPortsButton = new System.Windows.Forms.Button();
+            this.servo12Label = new System.Windows.Forms.Label();
+            this.com1 = new System.Windows.Forms.Label();
+            this.com2 = new System.Windows.Forms.Label();
+            this.servo34Label = new System.Windows.Forms.Label();
+            this.com3 = new System.Windows.Forms.Label();
+            this.servo56Label = new System.Windows.Forms.Label();
+            this.com4 = new System.Windows.Forms.Label();
+            this.servo78Label = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.ChartFirstServo)).BeginInit();
             this.SuspendLayout();
             // 
@@ -74,18 +82,9 @@
             this.amplitudeBox.Click += new System.EventHandler(this.AmplitudeBox_Click);
             this.amplitudeBox.TextChanged += new System.EventHandler(this.AmplitudeBox_Click);
             // 
-            // phaseBox
-            // 
-            this.phaseBox.Location = new System.Drawing.Point(78, 72);
-            this.phaseBox.Name = "phaseBox";
-            this.phaseBox.Size = new System.Drawing.Size(38, 20);
-            this.phaseBox.TabIndex = 2;
-            this.phaseBox.Click += new System.EventHandler(this.PhaseBox_Click);
-            this.phaseBox.TextChanged += new System.EventHandler(this.PhaseBox_Click);
-            // 
             // periodBox
             // 
-            this.periodBox.Location = new System.Drawing.Point(78, 102);
+            this.periodBox.Location = new System.Drawing.Point(78, 73);
             this.periodBox.Name = "periodBox";
             this.periodBox.Size = new System.Drawing.Size(38, 20);
             this.periodBox.TabIndex = 3;
@@ -110,19 +109,10 @@
             this.amplitudeLabel.TabIndex = 5;
             this.amplitudeLabel.Text = "Amplitude";
             // 
-            // phaseLabel
-            // 
-            this.phaseLabel.AutoSize = true;
-            this.phaseLabel.Location = new System.Drawing.Point(19, 75);
-            this.phaseLabel.Name = "phaseLabel";
-            this.phaseLabel.Size = new System.Drawing.Size(37, 13);
-            this.phaseLabel.TabIndex = 6;
-            this.phaseLabel.Text = "Phase";
-            // 
             // periodLabel
             // 
             this.periodLabel.AutoSize = true;
-            this.periodLabel.Location = new System.Drawing.Point(19, 105);
+            this.periodLabel.Location = new System.Drawing.Point(19, 76);
             this.periodLabel.Name = "periodLabel";
             this.periodLabel.Size = new System.Drawing.Size(37, 13);
             this.periodLabel.TabIndex = 7;
@@ -130,7 +120,7 @@
             // 
             // Send
             // 
-            this.Send.Location = new System.Drawing.Point(22, 323);
+            this.Send.Location = new System.Drawing.Point(22, 409);
             this.Send.Name = "Send";
             this.Send.Size = new System.Drawing.Size(120, 58);
             this.Send.TabIndex = 8;
@@ -140,7 +130,7 @@
             // 
             // Open
             // 
-            this.Open.Location = new System.Drawing.Point(22, 265);
+            this.Open.Location = new System.Drawing.Point(22, 351);
             this.Open.Name = "Open";
             this.Open.Size = new System.Drawing.Size(120, 23);
             this.Open.TabIndex = 9;
@@ -150,7 +140,7 @@
             // 
             // Kill
             // 
-            this.Kill.Location = new System.Drawing.Point(22, 294);
+            this.Kill.Location = new System.Drawing.Point(22, 380);
             this.Kill.Name = "Kill";
             this.Kill.Size = new System.Drawing.Size(120, 23);
             this.Kill.TabIndex = 10;
@@ -160,7 +150,7 @@
             // 
             // Max
             // 
-            this.Max.Location = new System.Drawing.Point(22, 387);
+            this.Max.Location = new System.Drawing.Point(22, 473);
             this.Max.Name = "Max";
             this.Max.Size = new System.Drawing.Size(120, 23);
             this.Max.TabIndex = 11;
@@ -170,7 +160,7 @@
             // 
             // Min
             // 
-            this.Min.Location = new System.Drawing.Point(22, 416);
+            this.Min.Location = new System.Drawing.Point(22, 502);
             this.Min.Name = "Min";
             this.Min.Size = new System.Drawing.Size(120, 23);
             this.Min.TabIndex = 12;
@@ -190,7 +180,7 @@
             series1.Name = "Series1";
             series1.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Double;
             this.ChartFirstServo.Series.Add(series1);
-            this.ChartFirstServo.Size = new System.Drawing.Size(651, 450);
+            this.ChartFirstServo.Size = new System.Drawing.Size(791, 532);
             this.ChartFirstServo.TabIndex = 13;
             this.ChartFirstServo.Text = "ChartFirstServo";
             // 
@@ -212,19 +202,10 @@
             this.amplitudeUnit.TabIndex = 15;
             this.amplitudeUnit.Text = "%";
             // 
-            // rad
-            // 
-            this.rad.AutoSize = true;
-            this.rad.Location = new System.Drawing.Point(122, 75);
-            this.rad.Name = "rad";
-            this.rad.Size = new System.Drawing.Size(28, 13);
-            this.rad.TabIndex = 16;
-            this.rad.Text = "deg.";
-            // 
             // periodUnit
             // 
             this.periodUnit.AutoSize = true;
-            this.periodUnit.Location = new System.Drawing.Point(122, 105);
+            this.periodUnit.Location = new System.Drawing.Point(122, 76);
             this.periodUnit.Name = "periodUnit";
             this.periodUnit.Size = new System.Drawing.Size(12, 13);
             this.periodUnit.TabIndex = 17;
@@ -233,7 +214,7 @@
             // sinRadioButton
             // 
             this.sinRadioButton.AutoSize = true;
-            this.sinRadioButton.Location = new System.Drawing.Point(32, 157);
+            this.sinRadioButton.Location = new System.Drawing.Point(32, 128);
             this.sinRadioButton.Name = "sinRadioButton";
             this.sinRadioButton.Size = new System.Drawing.Size(46, 17);
             this.sinRadioButton.TabIndex = 18;
@@ -245,7 +226,7 @@
             // triangleRadioButton
             // 
             this.triangleRadioButton.AutoSize = true;
-            this.triangleRadioButton.Location = new System.Drawing.Point(32, 180);
+            this.triangleRadioButton.Location = new System.Drawing.Point(32, 151);
             this.triangleRadioButton.Name = "triangleRadioButton";
             this.triangleRadioButton.Size = new System.Drawing.Size(63, 17);
             this.triangleRadioButton.TabIndex = 19;
@@ -257,42 +238,164 @@
             // WaveformLabel
             // 
             this.WaveformLabel.AutoSize = true;
-            this.WaveformLabel.Location = new System.Drawing.Point(19, 135);
+            this.WaveformLabel.Location = new System.Drawing.Point(19, 106);
             this.WaveformLabel.Name = "WaveformLabel";
             this.WaveformLabel.Size = new System.Drawing.Size(59, 13);
             this.WaveformLabel.TabIndex = 20;
             this.WaveformLabel.Text = "Waveform:";
             // 
-            // comboBoxPort
+            // sineTriangleRadioButton
             // 
-            this.comboBoxPort.FormattingEnabled = true;
-            this.comboBoxPort.Location = new System.Drawing.Point(22, 238);
-            this.comboBoxPort.Name = "comboBoxPort";
-            this.comboBoxPort.Size = new System.Drawing.Size(73, 21);
-            this.comboBoxPort.TabIndex = 21;
-            this.comboBoxPort.DropDown += new System.EventHandler(this.comboBoxPort_DropDown);
+            this.sineTriangleRadioButton.AutoSize = true;
+            this.sineTriangleRadioButton.Location = new System.Drawing.Point(32, 174);
+            this.sineTriangleRadioButton.Name = "sineTriangleRadioButton";
+            this.sineTriangleRadioButton.Size = new System.Drawing.Size(87, 17);
+            this.sineTriangleRadioButton.TabIndex = 23;
+            this.sineTriangleRadioButton.TabStop = true;
+            this.sineTriangleRadioButton.Text = "Sine Triangle";
+            this.sineTriangleRadioButton.UseVisualStyleBackColor = true;
+            this.sineTriangleRadioButton.CheckedChanged += new System.EventHandler(this.sineTriangleRadioButton_CheckedChanged);
             // 
-            // PortsLabel
+            // triangleSineRadioButton
             // 
-            this.PortsLabel.AutoSize = true;
-            this.PortsLabel.Location = new System.Drawing.Point(22, 219);
-            this.PortsLabel.Name = "PortsLabel";
-            this.PortsLabel.Size = new System.Drawing.Size(89, 13);
-            this.PortsLabel.TabIndex = 22;
-            this.PortsLabel.Text = "Connecting Port: ";
+            this.triangleSineRadioButton.AutoSize = true;
+            this.triangleSineRadioButton.Location = new System.Drawing.Point(32, 198);
+            this.triangleSineRadioButton.Name = "triangleSineRadioButton";
+            this.triangleSineRadioButton.Size = new System.Drawing.Size(87, 17);
+            this.triangleSineRadioButton.TabIndex = 24;
+            this.triangleSineRadioButton.TabStop = true;
+            this.triangleSineRadioButton.Text = "Triangle Sine";
+            this.triangleSineRadioButton.UseVisualStyleBackColor = true;
+            this.triangleSineRadioButton.CheckedChanged += new System.EventHandler(this.triangleSineRadioButton_CheckedChanged);
+            // 
+            // positiveSawtoothRadioButton
+            // 
+            this.positiveSawtoothRadioButton.AutoSize = true;
+            this.positiveSawtoothRadioButton.Location = new System.Drawing.Point(32, 222);
+            this.positiveSawtoothRadioButton.Name = "positiveSawtoothRadioButton";
+            this.positiveSawtoothRadioButton.Size = new System.Drawing.Size(110, 17);
+            this.positiveSawtoothRadioButton.TabIndex = 25;
+            this.positiveSawtoothRadioButton.TabStop = true;
+            this.positiveSawtoothRadioButton.Text = "Positive Sawtooth";
+            this.positiveSawtoothRadioButton.UseVisualStyleBackColor = true;
+            this.positiveSawtoothRadioButton.CheckedChanged += new System.EventHandler(this.positiveSawtoothRadioButton_CheckedChanged);
+            // 
+            // negativeSawtoothRadioButton
+            // 
+            this.negativeSawtoothRadioButton.AutoSize = true;
+            this.negativeSawtoothRadioButton.Location = new System.Drawing.Point(32, 246);
+            this.negativeSawtoothRadioButton.Name = "negativeSawtoothRadioButton";
+            this.negativeSawtoothRadioButton.Size = new System.Drawing.Size(116, 17);
+            this.negativeSawtoothRadioButton.TabIndex = 26;
+            this.negativeSawtoothRadioButton.TabStop = true;
+            this.negativeSawtoothRadioButton.Text = "Negative Sawtooth";
+            this.negativeSawtoothRadioButton.UseVisualStyleBackColor = true;
+            this.negativeSawtoothRadioButton.CheckedChanged += new System.EventHandler(this.negativeSawtoothRadioButton_CheckedChanged);
+            // 
+            // connectingPortsButton
+            // 
+            this.connectingPortsButton.Location = new System.Drawing.Point(22, 322);
+            this.connectingPortsButton.Name = "connectingPortsButton";
+            this.connectingPortsButton.Size = new System.Drawing.Size(120, 23);
+            this.connectingPortsButton.TabIndex = 27;
+            this.connectingPortsButton.Text = "Connecting Ports";
+            this.connectingPortsButton.UseVisualStyleBackColor = true;
+            this.connectingPortsButton.Click += new System.EventHandler(this.connectingPortsButton_Click);
+            // 
+            // servo12Label
+            // 
+            this.servo12Label.AutoSize = true;
+            this.servo12Label.Location = new System.Drawing.Point(150, 538);
+            this.servo12Label.Name = "servo12Label";
+            this.servo12Label.Size = new System.Drawing.Size(82, 13);
+            this.servo12Label.TabIndex = 28;
+            this.servo12Label.Text = "Servos 1 and 2:";
+            // 
+            // com1
+            // 
+            this.com1.AutoSize = true;
+            this.com1.Location = new System.Drawing.Point(229, 538);
+            this.com1.Name = "com1";
+            this.com1.Size = new System.Drawing.Size(13, 13);
+            this.com1.TabIndex = 29;
+            this.com1.Text = "--";
+            // 
+            // com2
+            // 
+            this.com2.AutoSize = true;
+            this.com2.Location = new System.Drawing.Point(360, 538);
+            this.com2.Name = "com2";
+            this.com2.Size = new System.Drawing.Size(13, 13);
+            this.com2.TabIndex = 31;
+            this.com2.Text = "--";
+            // 
+            // servo34Label
+            // 
+            this.servo34Label.AutoSize = true;
+            this.servo34Label.Location = new System.Drawing.Point(281, 538);
+            this.servo34Label.Name = "servo34Label";
+            this.servo34Label.Size = new System.Drawing.Size(82, 13);
+            this.servo34Label.TabIndex = 30;
+            this.servo34Label.Text = "Servos 3 and 4:";
+            // 
+            // com3
+            // 
+            this.com3.AutoSize = true;
+            this.com3.Location = new System.Drawing.Point(490, 538);
+            this.com3.Name = "com3";
+            this.com3.Size = new System.Drawing.Size(13, 13);
+            this.com3.TabIndex = 33;
+            this.com3.Text = "--";
+            // 
+            // servo56Label
+            // 
+            this.servo56Label.AutoSize = true;
+            this.servo56Label.Location = new System.Drawing.Point(412, 538);
+            this.servo56Label.Name = "servo56Label";
+            this.servo56Label.Size = new System.Drawing.Size(82, 13);
+            this.servo56Label.TabIndex = 32;
+            this.servo56Label.Text = "Servos 5 and 6:";
+            // 
+            // com4
+            // 
+            this.com4.AutoSize = true;
+            this.com4.Location = new System.Drawing.Point(622, 538);
+            this.com4.Name = "com4";
+            this.com4.Size = new System.Drawing.Size(13, 13);
+            this.com4.TabIndex = 35;
+            this.com4.Text = "--";
+            // 
+            // servo78Label
+            // 
+            this.servo78Label.AutoSize = true;
+            this.servo78Label.Location = new System.Drawing.Point(543, 538);
+            this.servo78Label.Name = "servo78Label";
+            this.servo78Label.Size = new System.Drawing.Size(82, 13);
+            this.servo78Label.TabIndex = 34;
+            this.servo78Label.Text = "Servos 7 and 8:";
             // 
             // PeristalticHapticActuator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.PortsLabel);
-            this.Controls.Add(this.comboBoxPort);
+            this.ClientSize = new System.Drawing.Size(942, 619);
+            this.Controls.Add(this.com4);
+            this.Controls.Add(this.servo78Label);
+            this.Controls.Add(this.com3);
+            this.Controls.Add(this.servo56Label);
+            this.Controls.Add(this.com2);
+            this.Controls.Add(this.servo34Label);
+            this.Controls.Add(this.com1);
+            this.Controls.Add(this.servo12Label);
+            this.Controls.Add(this.connectingPortsButton);
+            this.Controls.Add(this.negativeSawtoothRadioButton);
+            this.Controls.Add(this.positiveSawtoothRadioButton);
+            this.Controls.Add(this.triangleSineRadioButton);
+            this.Controls.Add(this.sineTriangleRadioButton);
             this.Controls.Add(this.WaveformLabel);
             this.Controls.Add(this.triangleRadioButton);
             this.Controls.Add(this.sinRadioButton);
             this.Controls.Add(this.periodUnit);
-            this.Controls.Add(this.rad);
             this.Controls.Add(this.amplitudeUnit);
             this.Controls.Add(this.Hz);
             this.Controls.Add(this.ChartFirstServo);
@@ -302,11 +405,9 @@
             this.Controls.Add(this.Open);
             this.Controls.Add(this.Send);
             this.Controls.Add(this.periodLabel);
-            this.Controls.Add(this.phaseLabel);
             this.Controls.Add(this.amplitudeLabel);
             this.Controls.Add(this.frequency);
             this.Controls.Add(this.periodBox);
-            this.Controls.Add(this.phaseBox);
             this.Controls.Add(this.amplitudeBox);
             this.Controls.Add(this.frequencyBox);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -323,11 +424,9 @@
 
         private System.Windows.Forms.TextBox frequencyBox;
         private System.Windows.Forms.TextBox amplitudeBox;
-        private System.Windows.Forms.TextBox phaseBox;
         private System.Windows.Forms.TextBox periodBox;
         private System.Windows.Forms.Label frequency;
         private System.Windows.Forms.Label amplitudeLabel;
-        private System.Windows.Forms.Label phaseLabel;
         private System.Windows.Forms.Label periodLabel;
         private System.Windows.Forms.Button Send;
         private System.Windows.Forms.Button Open;
@@ -337,13 +436,23 @@
         private System.Windows.Forms.DataVisualization.Charting.Chart ChartFirstServo;
         private System.Windows.Forms.Label Hz;
         private System.Windows.Forms.Label amplitudeUnit;
-        private System.Windows.Forms.Label rad;
         private System.Windows.Forms.Label periodUnit;
         private System.Windows.Forms.RadioButton sinRadioButton;
         private System.Windows.Forms.RadioButton triangleRadioButton;
         private System.Windows.Forms.Label WaveformLabel;
-        private System.Windows.Forms.ComboBox comboBoxPort;
-        private System.Windows.Forms.Label PortsLabel;
+        private System.Windows.Forms.RadioButton sineTriangleRadioButton;
+        private System.Windows.Forms.RadioButton triangleSineRadioButton;
+        private System.Windows.Forms.RadioButton positiveSawtoothRadioButton;
+        private System.Windows.Forms.RadioButton negativeSawtoothRadioButton;
+        private System.Windows.Forms.Button connectingPortsButton;
+        private System.Windows.Forms.Label servo12Label;
+        private System.Windows.Forms.Label com1;
+        private System.Windows.Forms.Label com2;
+        private System.Windows.Forms.Label servo34Label;
+        private System.Windows.Forms.Label com3;
+        private System.Windows.Forms.Label servo56Label;
+        private System.Windows.Forms.Label com4;
+        private System.Windows.Forms.Label servo78Label;
     }
 }
 

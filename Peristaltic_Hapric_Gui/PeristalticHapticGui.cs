@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ArduinoConnector;
 using HerkulexApi;
 using HerkulexGuiMapper;
 using Peristaltic_Hapric_Gui;
@@ -21,12 +22,14 @@ namespace Peristaltic_Haptic_Gui
         private const int DefaultMaxDegree = 60;
 
 
+
         private static double amplitude = 100;
         private static double maxAmplitude = 100;
         private static double minAmplitude = 0;
         private static int baudrate = 115200;
         private double amplitudeInDec => amplitude / 100;
         private double maxAmplitudeInDec => maxAmplitude / 100;
+       
 
         // private static double phase = 0; //in radian
         private double servoMaxSpeed = 0.00274;
@@ -42,6 +45,11 @@ namespace Peristaltic_Haptic_Gui
         private double maxDegree;
         private string[] selectedServoPorts => selectedServoPortsList.ToArray();
         private List<string> selectedServoPortsList;
+
+        private double batteryLevel = -1;
+        private double maximumBatteryVoltage = 14.8;
+        private Arduino arduinoBattery; 
+        private Timer myTimer = new Timer();
 
         //private static double spacing = 100;
         private System.Windows.Forms.DataVisualization.Charting.Series waveForm;
@@ -65,11 +73,13 @@ namespace Peristaltic_Haptic_Gui
             StartupValues();
             CalculateWaveform();
             DisableDependantButtons();
+            
 
         }
 
         private void StartupValues()
         {
+            BatteryUpdate();
             radioButtonList = new List<RadioButton>()
             {
                 triangleRadioButton, sinRadioButton, sineTriangleRadioButton, triangleRadioButton,
@@ -86,7 +96,7 @@ namespace Peristaltic_Haptic_Gui
             Kill.BackColor = Color.Tomato;
             selectedComPorts = new HerkulexComPortSelection("", "", "", "", "");
             myConnectors = new List<HerkulexInterfaceConnector>()
-                { myHerkulexInterface12, myHerkulexInterface34, myHerkulexInterface56, myHerkulexInterface78 };
+                {myHerkulexInterface12, myHerkulexInterface34, myHerkulexInterface56, myHerkulexInterface78};
         }
 
         private void EnableMainButtons()
@@ -130,6 +140,7 @@ namespace Peristaltic_Haptic_Gui
             {
                 xAxisWaveForm.Points.AddXY(Convert.ToDouble(i), 0);
             }
+
             var generatedWaveForm = WaveformGenerator.Generate(waveformType, fc, period, amplitude, maxAmplitude);
             foreach (var el in generatedWaveForm) waveForm.Points.AddXY(el.xValue, el.yValue);
             ChartFirstServo.Series.Add(waveForm);
@@ -157,6 +168,7 @@ namespace Peristaltic_Haptic_Gui
                 }
             }
         }
+
         /* private void PhaseBox_Click(object sender, EventArgs e)
          {
              var value = phaseBox.Text;
@@ -188,6 +200,7 @@ namespace Peristaltic_Haptic_Gui
 
             }
         }
+
         private void CycleNumBox_Click(object sender, EventArgs e)
         {
             var value = periodBox.Text;
@@ -201,10 +214,11 @@ namespace Peristaltic_Haptic_Gui
                 }
             }
         }
+
         private void SendButton_Click(object sender, EventArgs e)
         {
             var replayer = new Replayer(minDegree, maxDegree);
-            var dataPointValues = waveForm.Points.Select(el => new Datapoint(el.XValue, el.YValues.First() / 100));
+            //var dataPointValues = waveForm.Points.Select(el => new Datapoint(el.XValue, el.YValues.First() / 100));
             try
             {
                 replayer.StartSeries(waveformType, fc, maxAmplitudeInDec, amplitudeInDec, period, myServos);
@@ -216,14 +230,45 @@ namespace Peristaltic_Haptic_Gui
 
 
         }
+
         private void OpenButton_Click(object sender, EventArgs e)
         {
-            if (InitializeServos())
+            // if (InitializeServos() && InitializeBattery())
+            if (InitializeBattery())
             {
                 EnableDependantButtons();
             }
         }
 
+        private bool InitializeBattery()
+        {
+            if (selectedComPorts == null)
+            {
+                var exception = new InvalidOperationException("Did not find the connection port.\n" +
+                                                              "If you have not connected the controller yet, please connect it.\n " +
+                                                              "If its connected, please check, if you have installed the correct drivers.\n" +
+                                                              $"If you have installed the drivers, please make sure that the baud rate is {baudrate} in the control panel.");
+
+                MessageBox.Show(exception.Message);
+                return false;
+            }
+            try
+            {
+               arduinoBattery = new Arduino(selectedComPorts.batteryPort, baudrate);
+            }
+            catch (Exception e)
+            {
+                KillAllConnectors();
+                MessageBox.Show(e.Message);
+                return false;
+            }
+            myTimer.Tick += new EventHandler(TimerEventProcessor);
+
+            // Sets the timer interval to 4 seconds.
+            myTimer.Interval = 4000;
+            myTimer.Start();
+            return true; 
+        }
         private bool InitializeServos()
         {
             if (selectedComPorts == null)
@@ -232,9 +277,11 @@ namespace Peristaltic_Haptic_Gui
                                                               "If you have not connected the controller yet, please connect it.\n " +
                                                               "If its connected, please check, if you have installed the correct drivers.\n" +
                                                               $"If you have installed the drivers, please make sure that the baud rate is {baudrate} in the control panel.");
+
                 MessageBox.Show(exception.Message);
                 return false;
             }
+
             try
             {
                 for (int i = 0; i < myConnectors.Count; i++)
@@ -269,9 +316,9 @@ namespace Peristaltic_Haptic_Gui
             myServos = new List<HerkulexServo>()
             {
                 new HerkulexServo(1, myHerkulexInterface12), new HerkulexServo(2, myHerkulexInterface12),
-                new HerkulexServo(3, myHerkulexInterface34),new HerkulexServo(4, myHerkulexInterface34),
-                new HerkulexServo(5, myHerkulexInterface56),new HerkulexServo(6, myHerkulexInterface56),
-                new HerkulexServo(7, myHerkulexInterface78),new HerkulexServo(8, myHerkulexInterface78)
+                new HerkulexServo(3, myHerkulexInterface34), new HerkulexServo(4, myHerkulexInterface34),
+                new HerkulexServo(5, myHerkulexInterface56), new HerkulexServo(6, myHerkulexInterface56),
+                new HerkulexServo(7, myHerkulexInterface78), new HerkulexServo(8, myHerkulexInterface78)
             };
             try
             {
@@ -329,6 +376,7 @@ namespace Peristaltic_Haptic_Gui
             }
 
         }
+
         private void MinButton_Click(object sender, EventArgs e)
         {
             var replayer = new Replayer(minDegree, maxDegree);
@@ -342,6 +390,7 @@ namespace Peristaltic_Haptic_Gui
             }
 
         }
+
         private void KillButton_Click(object sender, EventArgs e)
         {
             foreach (var servo in myServos)
@@ -349,6 +398,7 @@ namespace Peristaltic_Haptic_Gui
                 servo.TorqueOff();
                 servo.Reboot();
             }
+
             KillAllConnectors();
             DisableDependantButtons();
         }
@@ -363,6 +413,21 @@ namespace Peristaltic_Haptic_Gui
                     {
                         port.Close();
                     }
+                }
+            }
+            KillBattery();
+        }
+
+        private void KillBattery()
+        {
+            if (arduinoBattery != null)
+            {
+                if (arduinoBattery.IsOpen)
+                {
+                    arduinoBattery.Close();
+                    myTimer.Stop();
+                    batteryLevel = -1; 
+                    BatteryUpdate();
                 }
             }
         }
@@ -392,6 +457,7 @@ namespace Peristaltic_Haptic_Gui
                 CalculateWaveform();
             }
         }
+
         private void UncheckAllRadioButtonsExcept(RadioButton button)
         {
             foreach (var el in radioButtonList)
@@ -455,15 +521,44 @@ namespace Peristaltic_Haptic_Gui
             com3.Text = selectedComPorts.port56;
             com4.Text = selectedComPorts.port78;
         }
-        //* private void comboBoxPort_DropDown(object sender, EventArgs e)
-        /* {
-             comboBoxPort.Items.Clear();
-             var ports = availablePorts;
-             foreach (var port in ports)
-             {
-                 comboBoxPort.Items.Add(port);
-             }
-         }*/
 
+        private void BatteryUpdate()
+        {
+            // batteryLevel = 100;
+            var displayString = "Battery: " + batteryLevel + "%"; ; 
+            if (batteryLevel >= 40)
+            {
+                BatteryProgressLabel.BackColor = Color.Green;
+            }
+
+            if (batteryLevel < 40 && batteryLevel > 20)
+            {
+                BatteryProgressLabel.BackColor = Color.DarkOrange;
+            }
+
+            if (batteryLevel <= 20)
+            {
+                BatteryProgressLabel.BackColor = Color.Red;
+            }
+
+            if (batteryLevel < 0)
+            {
+                displayString = "Battery: -- ";
+                BatteryProgressLabel.BackColor = Color.Gray;
+            }
+
+            BatteryProgressLabel.Text = displayString; 
+
+
+        }
+
+        private void TimerEventProcessor(Object myObject,
+            EventArgs myEventArgs)
+        {
+            var batteryPercent = arduinoBattery.GetBatteryVoltage()*100; 
+            batteryLevel = batteryPercent;
+            BatteryUpdate();
+
+        }
     }
 }

@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HerkulexApi", "..\HerkulexA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HerkulexGuiMapper", "..\HerkulexApi\HerkulexGuiMapper\HerkulexGuiMapper.csproj", "{C54C612D-46F9-4C41-8664-59714700F511}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arduino", "..\ArduinoConnector\Arduino\Arduino.csproj", "{1780FBBF-97C3-4CBB-8C17-11DBED5E1664}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{C54C612D-46F9-4C41-8664-59714700F511}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C54C612D-46F9-4C41-8664-59714700F511}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C54C612D-46F9-4C41-8664-59714700F511}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1780FBBF-97C3-4CBB-8C17-11DBED5E1664}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1780FBBF-97C3-4CBB-8C17-11DBED5E1664}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1780FBBF-97C3-4CBB-8C17-11DBED5E1664}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1780FBBF-97C3-4CBB-8C17-11DBED5E1664}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

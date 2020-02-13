@@ -103,6 +103,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\ArduinoConnector\Arduino\Arduino.csproj">
+      <Project>{1780fbbf-97c3-4cbb-8c17-11dbed5e1664}</Project>
+      <Name>Arduino</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\HerkulexApi\HerkulexGuiMapper\HerkulexGuiMapper.csproj">
       <Project>{c54c612d-46f9-4c41-8664-59714700f511}</Project>
       <Name>HerkulexGuiMapper</Name>

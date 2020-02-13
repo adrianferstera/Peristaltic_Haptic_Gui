@@ -62,6 +62,7 @@
             this.servo56Label = new System.Windows.Forms.Label();
             this.com4 = new System.Windows.Forms.Label();
             this.servo78Label = new System.Windows.Forms.Label();
+            this.BatteryProgressLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.ChartFirstServo)).BeginInit();
             this.SuspendLayout();
             // 
@@ -374,11 +375,25 @@
             this.servo78Label.TabIndex = 34;
             this.servo78Label.Text = "Servos 7 and 8:";
             // 
+            // BatteryProgressLabel
+            // 
+            this.BatteryProgressLabel.AutoSize = true;
+            this.BatteryProgressLabel.BackColor = System.Drawing.Color.Transparent;
+            this.BatteryProgressLabel.Cursor = System.Windows.Forms.Cursors.No;
+            this.BatteryProgressLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BatteryProgressLabel.Location = new System.Drawing.Point(806, 538);
+            this.BatteryProgressLabel.Name = "BatteryProgressLabel";
+            this.BatteryProgressLabel.Size = new System.Drawing.Size(77, 20);
+            this.BatteryProgressLabel.TabIndex = 37;
+            this.BatteryProgressLabel.Text = "Battery: ";
+            // 
             // PeristalticHapticActuator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(942, 619);
+            this.Controls.Add(this.BatteryProgressLabel);
             this.Controls.Add(this.com4);
             this.Controls.Add(this.servo78Label);
             this.Controls.Add(this.com3);
@@ -453,6 +468,7 @@
         private System.Windows.Forms.Label servo56Label;
         private System.Windows.Forms.Label com4;
         private System.Windows.Forms.Label servo78Label;
+        private System.Windows.Forms.Label BatteryProgressLabel;
     }
 }
 

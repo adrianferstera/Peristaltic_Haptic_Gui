@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using HerkulexApi;
 
@@ -16,7 +11,6 @@ namespace Peristaltic_Hapric_Gui
         public HerkulexComPortSelection SelectedPorts;
         private HerkulexComPortSelection selectedPorts;
         private string[] availablePorts => HerkulexInterfaceConnector.AvailableSerialPorts();
-        private HerkulexInterfaceConnector myConnector;
         public ConnectingSettings(HerkulexComPortSelection selectedPorts)
         {
             InitializeComponent();
@@ -70,7 +64,12 @@ namespace Peristaltic_Hapric_Gui
 
         private void comboBattery_DropDown(object sender, EventArgs e)
         {
-
+            comboBattery.Items.Clear();
+            var ports = availablePorts;
+            foreach (var port in ports)
+            {
+                comboBattery.Items.Add(port);
+            }
         }
 
         private void applyButton_Click(object sender, EventArgs e)
@@ -106,9 +105,10 @@ namespace Peristaltic_Hapric_Gui
            
         }
 
-        private void closebutton_Click(object sender, EventArgs e)
+        private void Closebutton_Click(object sender, EventArgs e)
         {
             this.Close();
         }
+        
     }
 }

@@ -71,7 +71,7 @@
             this.closebutton.TabIndex = 7;
             this.closebutton.Text = "Cancel";
             this.closebutton.UseVisualStyleBackColor = true;
-            this.closebutton.Click += new System.EventHandler(this.closebutton_Click);
+            this.closebutton.Click += new System.EventHandler(this.Closebutton_Click);
             // 
             // comboServo56
             // 

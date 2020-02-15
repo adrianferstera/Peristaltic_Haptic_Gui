@@ -29,7 +29,7 @@ namespace Peristaltic_Haptic_Gui
         private static int baudrate = 115200;
         private double amplitudeInDec => amplitude / 100;
         private double maxAmplitudeInDec => maxAmplitude / 100;
-       
+
 
         // private static double phase = 0; //in radian
         private double servoMaxSpeed = 0.00274;
@@ -47,8 +47,9 @@ namespace Peristaltic_Haptic_Gui
         private List<string> selectedServoPortsList;
 
         private double batteryLevel = -1;
+        private int startServo = 1; //start servo between 1 and 8
         private double maximumBatteryVoltage = 14.8;
-        private Arduino arduinoBattery; 
+        private Arduino arduinoBattery;
         private Timer myTimer = new Timer();
 
         //private static double spacing = 100;
@@ -59,7 +60,6 @@ namespace Peristaltic_Haptic_Gui
         private HerkulexInterfaceConnector myHerkulexInterface34;
         private HerkulexInterfaceConnector myHerkulexInterface56;
         private HerkulexInterfaceConnector myHerkulexInterface78;
-        private HerkulexInterfaceConnector BatteryReader;
 
         private List<HerkulexInterfaceConnector> myConnectors;
         //private string[] availablePorts => HerkulexInterfaceConnector.AvailableSerialPorts();
@@ -73,8 +73,6 @@ namespace Peristaltic_Haptic_Gui
             StartupValues();
             CalculateWaveform();
             DisableDependantButtons();
-            
-
         }
 
         private void StartupValues()
@@ -97,6 +95,10 @@ namespace Peristaltic_Haptic_Gui
             selectedComPorts = new HerkulexComPortSelection("", "", "", "", "");
             myConnectors = new List<HerkulexInterfaceConnector>()
                 {myHerkulexInterface12, myHerkulexInterface34, myHerkulexInterface56, myHerkulexInterface78};
+            startServoTrackBar.Maximum = 8;
+            startServoTrackBar.Minimum = 1;
+            startServoTrackBar.TickFrequency = 1;
+            startServoTrackBar.Value = startServo; 
         }
 
         private void EnableMainButtons()
@@ -117,6 +119,7 @@ namespace Peristaltic_Haptic_Gui
             Send.Enabled = true;
             Max.Enabled = true;
             Min.Enabled = true;
+            startServoTrackBar.Enabled = true;
             DisableMainButtons();
         }
 
@@ -126,6 +129,7 @@ namespace Peristaltic_Haptic_Gui
             Send.Enabled = false;
             Max.Enabled = false;
             Min.Enabled = false;
+            startServoTrackBar.Enabled = false;
             EnableMainButtons();
         }
 
@@ -254,7 +258,7 @@ namespace Peristaltic_Haptic_Gui
             }
             try
             {
-               arduinoBattery = new Arduino(selectedComPorts.batteryPort, baudrate);
+                arduinoBattery = new Arduino(selectedComPorts.batteryPort, baudrate);
             }
             catch (Exception e)
             {
@@ -263,11 +267,11 @@ namespace Peristaltic_Haptic_Gui
                 return false;
             }
             myTimer.Tick += new EventHandler(TimerEventProcessor);
-
-            // Sets the timer interval to 4 seconds.
-            myTimer.Interval = 4000;
+            // Sets the timer interval to 10 seconds.
+            myTimer.Interval = 10000;
             myTimer.Start();
-            return true; 
+            TimerEventProcessor(this, new EventArgs()); //let it run once 
+            return true;
         }
         private bool InitializeServos()
         {
@@ -426,7 +430,7 @@ namespace Peristaltic_Haptic_Gui
                 {
                     arduinoBattery.Close();
                     myTimer.Stop();
-                    batteryLevel = -1; 
+                    batteryLevel = -1;
                     BatteryUpdate();
                 }
             }
@@ -525,7 +529,7 @@ namespace Peristaltic_Haptic_Gui
         private void BatteryUpdate()
         {
             // batteryLevel = 100;
-            var displayString = "Battery: " + batteryLevel + "%"; ; 
+            var displayString = "Battery: " + batteryLevel + "%"; ;
             if (batteryLevel >= 40)
             {
                 BatteryProgressLabel.BackColor = Color.Green;
@@ -533,7 +537,7 @@ namespace Peristaltic_Haptic_Gui
 
             if (batteryLevel < 40 && batteryLevel > 20)
             {
-                BatteryProgressLabel.BackColor = Color.DarkOrange;
+                BatteryProgressLabel.BackColor = Color.Yellow;
             }
 
             if (batteryLevel <= 20)
@@ -547,7 +551,7 @@ namespace Peristaltic_Haptic_Gui
                 BatteryProgressLabel.BackColor = Color.Gray;
             }
 
-            BatteryProgressLabel.Text = displayString; 
+            BatteryProgressLabel.Text = displayString;
 
 
         }
@@ -555,10 +559,23 @@ namespace Peristaltic_Haptic_Gui
         private void TimerEventProcessor(Object myObject,
             EventArgs myEventArgs)
         {
-            var batteryPercent = arduinoBattery.GetBatteryVoltage()*100; 
+            var batteryPercent = arduinoBattery.GetBatteryVoltage() * 100;
             batteryLevel = batteryPercent;
             BatteryUpdate();
 
+        }
+
+        private void startServo_trackBarScroll(object sender, EventArgs e)
+        {
+            var startServoValue = startServoTrackBar.Value;
+            // if (startServoValue > myServos.Count || startServoValue < 1)
+            if (startServoValue > 8 || startServoValue < 1)
+            {
+                throw new InvalidOperationException("The start servo you have selected is out of range." +
+                                                    "You can choose servos between 1 and 8, you have" +
+                                                    $" selected {startServoValue}.");
+            }
+            startServo = startServoValue;
         }
     }
 }

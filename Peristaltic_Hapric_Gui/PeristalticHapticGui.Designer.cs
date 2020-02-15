@@ -63,7 +63,9 @@
             this.com4 = new System.Windows.Forms.Label();
             this.servo78Label = new System.Windows.Forms.Label();
             this.BatteryProgressLabel = new System.Windows.Forms.Label();
+            this.startServoTrackBar = new System.Windows.Forms.TrackBar();
             ((System.ComponentModel.ISupportInitialize)(this.ChartFirstServo)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.startServoTrackBar)).BeginInit();
             this.SuspendLayout();
             // 
             // frequencyBox
@@ -131,7 +133,7 @@
             // 
             // Open
             // 
-            this.Open.Location = new System.Drawing.Point(22, 351);
+            this.Open.Location = new System.Drawing.Point(22, 322);
             this.Open.Name = "Open";
             this.Open.Size = new System.Drawing.Size(120, 23);
             this.Open.TabIndex = 9;
@@ -295,7 +297,7 @@
             // 
             // connectingPortsButton
             // 
-            this.connectingPortsButton.Location = new System.Drawing.Point(22, 322);
+            this.connectingPortsButton.Location = new System.Drawing.Point(22, 293);
             this.connectingPortsButton.Name = "connectingPortsButton";
             this.connectingPortsButton.Size = new System.Drawing.Size(120, 23);
             this.connectingPortsButton.TabIndex = 27;
@@ -306,7 +308,7 @@
             // servo12Label
             // 
             this.servo12Label.AutoSize = true;
-            this.servo12Label.Location = new System.Drawing.Point(150, 538);
+            this.servo12Label.Location = new System.Drawing.Point(23, 529);
             this.servo12Label.Name = "servo12Label";
             this.servo12Label.Size = new System.Drawing.Size(82, 13);
             this.servo12Label.TabIndex = 28;
@@ -315,7 +317,7 @@
             // com1
             // 
             this.com1.AutoSize = true;
-            this.com1.Location = new System.Drawing.Point(229, 538);
+            this.com1.Location = new System.Drawing.Point(102, 529);
             this.com1.Name = "com1";
             this.com1.Size = new System.Drawing.Size(13, 13);
             this.com1.TabIndex = 29;
@@ -324,7 +326,7 @@
             // com2
             // 
             this.com2.AutoSize = true;
-            this.com2.Location = new System.Drawing.Point(360, 538);
+            this.com2.Location = new System.Drawing.Point(102, 542);
             this.com2.Name = "com2";
             this.com2.Size = new System.Drawing.Size(13, 13);
             this.com2.TabIndex = 31;
@@ -333,7 +335,7 @@
             // servo34Label
             // 
             this.servo34Label.AutoSize = true;
-            this.servo34Label.Location = new System.Drawing.Point(281, 538);
+            this.servo34Label.Location = new System.Drawing.Point(23, 542);
             this.servo34Label.Name = "servo34Label";
             this.servo34Label.Size = new System.Drawing.Size(82, 13);
             this.servo34Label.TabIndex = 30;
@@ -342,7 +344,7 @@
             // com3
             // 
             this.com3.AutoSize = true;
-            this.com3.Location = new System.Drawing.Point(490, 538);
+            this.com3.Location = new System.Drawing.Point(101, 555);
             this.com3.Name = "com3";
             this.com3.Size = new System.Drawing.Size(13, 13);
             this.com3.TabIndex = 33;
@@ -351,7 +353,7 @@
             // servo56Label
             // 
             this.servo56Label.AutoSize = true;
-            this.servo56Label.Location = new System.Drawing.Point(412, 538);
+            this.servo56Label.Location = new System.Drawing.Point(23, 555);
             this.servo56Label.Name = "servo56Label";
             this.servo56Label.Size = new System.Drawing.Size(82, 13);
             this.servo56Label.TabIndex = 32;
@@ -360,7 +362,7 @@
             // com4
             // 
             this.com4.AutoSize = true;
-            this.com4.Location = new System.Drawing.Point(622, 538);
+            this.com4.Location = new System.Drawing.Point(102, 568);
             this.com4.Name = "com4";
             this.com4.Size = new System.Drawing.Size(13, 13);
             this.com4.TabIndex = 35;
@@ -369,7 +371,7 @@
             // servo78Label
             // 
             this.servo78Label.AutoSize = true;
-            this.servo78Label.Location = new System.Drawing.Point(543, 538);
+            this.servo78Label.Location = new System.Drawing.Point(23, 568);
             this.servo78Label.Name = "servo78Label";
             this.servo78Label.Size = new System.Drawing.Size(82, 13);
             this.servo78Label.TabIndex = 34;
@@ -381,18 +383,27 @@
             this.BatteryProgressLabel.BackColor = System.Drawing.Color.Transparent;
             this.BatteryProgressLabel.Cursor = System.Windows.Forms.Cursors.No;
             this.BatteryProgressLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BatteryProgressLabel.Location = new System.Drawing.Point(806, 538);
+            this.BatteryProgressLabel.Location = new System.Drawing.Point(22, 348);
             this.BatteryProgressLabel.Name = "BatteryProgressLabel";
             this.BatteryProgressLabel.Size = new System.Drawing.Size(77, 20);
             this.BatteryProgressLabel.TabIndex = 37;
             this.BatteryProgressLabel.Text = "Battery: ";
+            // 
+            // startServoTrackBar
+            // 
+            this.startServoTrackBar.Location = new System.Drawing.Point(150, 529);
+            this.startServoTrackBar.Name = "startServoTrackBar";
+            this.startServoTrackBar.Size = new System.Drawing.Size(791, 45);
+            this.startServoTrackBar.TabIndex = 38;
+            this.startServoTrackBar.Scroll += new System.EventHandler(this.startServo_trackBarScroll);
             // 
             // PeristalticHapticActuator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(942, 619);
+            this.ClientSize = new System.Drawing.Size(942, 585);
+            this.Controls.Add(this.startServoTrackBar);
             this.Controls.Add(this.BatteryProgressLabel);
             this.Controls.Add(this.com4);
             this.Controls.Add(this.servo78Label);
@@ -430,6 +441,7 @@
             this.Text = "Peristaltic Haptic Actuator";
             this.Load += new System.EventHandler(this.PeristalticHapticActuator_Load);
             ((System.ComponentModel.ISupportInitialize)(this.ChartFirstServo)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.startServoTrackBar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -469,6 +481,7 @@
         private System.Windows.Forms.Label com4;
         private System.Windows.Forms.Label servo78Label;
         private System.Windows.Forms.Label BatteryProgressLabel;
+        private System.Windows.Forms.TrackBar startServoTrackBar;
     }
 }
 

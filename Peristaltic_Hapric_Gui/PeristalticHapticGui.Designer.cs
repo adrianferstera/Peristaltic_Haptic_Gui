@@ -64,6 +64,8 @@
             this.servo78Label = new System.Windows.Forms.Label();
             this.BatteryProgressLabel = new System.Windows.Forms.Label();
             this.startServoTrackBar = new System.Windows.Forms.TrackBar();
+            this.startServoSelection_Label = new System.Windows.Forms.Label();
+            this.peristalticMotion_Checkbox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.ChartFirstServo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.startServoTrackBar)).BeginInit();
             this.SuspendLayout();
@@ -344,7 +346,7 @@
             // com3
             // 
             this.com3.AutoSize = true;
-            this.com3.Location = new System.Drawing.Point(101, 555);
+            this.com3.Location = new System.Drawing.Point(102, 555);
             this.com3.Name = "com3";
             this.com3.Size = new System.Drawing.Size(13, 13);
             this.com3.TabIndex = 33;
@@ -391,11 +393,31 @@
             // 
             // startServoTrackBar
             // 
-            this.startServoTrackBar.Location = new System.Drawing.Point(150, 529);
+            this.startServoTrackBar.Location = new System.Drawing.Point(296, 529);
             this.startServoTrackBar.Name = "startServoTrackBar";
-            this.startServoTrackBar.Size = new System.Drawing.Size(791, 45);
+            this.startServoTrackBar.Size = new System.Drawing.Size(645, 45);
             this.startServoTrackBar.TabIndex = 38;
             this.startServoTrackBar.Scroll += new System.EventHandler(this.startServo_trackBarScroll);
+            // 
+            // startServoSelection_Label
+            // 
+            this.startServoSelection_Label.AutoSize = true;
+            this.startServoSelection_Label.Location = new System.Drawing.Point(147, 534);
+            this.startServoSelection_Label.Name = "startServoSelection_Label";
+            this.startServoSelection_Label.Size = new System.Drawing.Size(143, 13);
+            this.startServoSelection_Label.TabIndex = 44;
+            this.startServoSelection_Label.Text = "Start of the peristaltic motion:";
+            // 
+            // peristalticMotion_Checkbox
+            // 
+            this.peristalticMotion_Checkbox.AutoSize = true;
+            this.peristalticMotion_Checkbox.Location = new System.Drawing.Point(150, 550);
+            this.peristalticMotion_Checkbox.Name = "peristalticMotion_Checkbox";
+            this.peristalticMotion_Checkbox.Size = new System.Drawing.Size(106, 17);
+            this.peristalticMotion_Checkbox.TabIndex = 45;
+            this.peristalticMotion_Checkbox.Text = "Peristaltic Motion";
+            this.peristalticMotion_Checkbox.UseVisualStyleBackColor = true;
+            this.peristalticMotion_Checkbox.Click += new System.EventHandler(this.peristalticMotion_Checkbox_Click);
             // 
             // PeristalticHapticActuator
             // 
@@ -403,6 +425,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(942, 585);
+            this.Controls.Add(this.peristalticMotion_Checkbox);
+            this.Controls.Add(this.startServoSelection_Label);
             this.Controls.Add(this.startServoTrackBar);
             this.Controls.Add(this.BatteryProgressLabel);
             this.Controls.Add(this.com4);
@@ -482,6 +506,8 @@
         private System.Windows.Forms.Label servo78Label;
         private System.Windows.Forms.Label BatteryProgressLabel;
         private System.Windows.Forms.TrackBar startServoTrackBar;
+        private System.Windows.Forms.Label startServoSelection_Label;
+        private System.Windows.Forms.CheckBox peristalticMotion_Checkbox;
     }
 }
 

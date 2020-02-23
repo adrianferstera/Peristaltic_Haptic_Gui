@@ -4,13 +4,13 @@ using System.Linq;
 using System.Windows.Forms;
 using HerkulexApi;
 
-namespace Peristaltic_Hapric_Gui
+namespace Peristaltic_Haptic_Gui
 {
     public partial class ConnectingSettings : Form
     {
         public HerkulexComPortSelection SelectedPorts;
         private HerkulexComPortSelection selectedPorts;
-        private string[] availablePorts => HerkulexInterfaceConnector.AvailableSerialPorts();
+        private string[] availablePorts => HerkulexInterface.AvailableSerialPorts();
         public ConnectingSettings(HerkulexComPortSelection selectedPorts)
         {
             InitializeComponent();

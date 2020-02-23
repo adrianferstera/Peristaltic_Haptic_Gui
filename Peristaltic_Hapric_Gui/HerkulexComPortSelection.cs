@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Peristaltic_Hapric_Gui
+namespace Peristaltic_Haptic_Gui
 {
     public class HerkulexComPortSelection
     {

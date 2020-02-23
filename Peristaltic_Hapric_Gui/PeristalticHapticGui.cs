@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
 using ArduinoConnector;
 using HerkulexApi;
 using HerkulexGuiMapper;
-using Peristaltic_Hapric_Gui;
+using Peristaltic_Haptic_Gui;
+using Timer = System.Windows.Forms.Timer;
 
 namespace Peristaltic_Haptic_Gui
 {
@@ -45,6 +45,7 @@ namespace Peristaltic_Haptic_Gui
         private double maxDegree;
         private string[] selectedServoPorts => selectedServoPortsList.ToArray();
         private List<string> selectedServoPortsList;
+        private bool spatialOnlyPattern = false;
 
         private double batteryLevel = -1;
         private int startServo = 1; //start servo between 1 and 8
@@ -55,13 +56,13 @@ namespace Peristaltic_Haptic_Gui
         //private static double spacing = 100;
         private System.Windows.Forms.DataVisualization.Charting.Series waveForm;
         private List<RadioButton> radioButtonList;
-        private List<HerkulexServo> myServos = new List<HerkulexServo>();
-        private HerkulexInterfaceConnector myHerkulexInterface12;
-        private HerkulexInterfaceConnector myHerkulexInterface34;
-        private HerkulexInterfaceConnector myHerkulexInterface56;
-        private HerkulexInterfaceConnector myHerkulexInterface78;
+        private List<IHerkulexServo> myServos = new List<IHerkulexServo>();
+        private HerkulexInterface myHerkulexInterface12;
+        private HerkulexInterface myHerkulexInterface34;
+        private HerkulexInterface myHerkulexInterface56;
+        private HerkulexInterface myHerkulexInterface78;
 
-        private List<HerkulexInterfaceConnector> myConnectors;
+        private List<HerkulexInterface> myConnectors;
         //private string[] availablePorts => HerkulexInterfaceConnector.AvailableSerialPorts();
 
         private static WaveformType waveformType = WaveformType.Sine;
@@ -93,12 +94,11 @@ namespace Peristaltic_Haptic_Gui
             Open.BackColor = Color.LightGreen;
             Kill.BackColor = Color.Tomato;
             selectedComPorts = new HerkulexComPortSelection("", "", "", "", "");
-            myConnectors = new List<HerkulexInterfaceConnector>()
-                {myHerkulexInterface12, myHerkulexInterface34, myHerkulexInterface56, myHerkulexInterface78};
+
             startServoTrackBar.Maximum = 8;
             startServoTrackBar.Minimum = 1;
             startServoTrackBar.TickFrequency = 1;
-            startServoTrackBar.Value = startServo; 
+            startServoTrackBar.Value = startServo;
         }
 
         private void EnableMainButtons()
@@ -119,6 +119,8 @@ namespace Peristaltic_Haptic_Gui
             Send.Enabled = true;
             Max.Enabled = true;
             Min.Enabled = true;
+            peristalticMotion_Checkbox.Enabled = true;
+            peristalticMotion_Checkbox.Checked = true;
             startServoTrackBar.Enabled = true;
             DisableMainButtons();
         }
@@ -128,6 +130,7 @@ namespace Peristaltic_Haptic_Gui
             Kill.Enabled = false;
             Send.Enabled = false;
             Max.Enabled = false;
+            peristalticMotion_Checkbox.Enabled = false;
             Min.Enabled = false;
             startServoTrackBar.Enabled = false;
             EnableMainButtons();
@@ -146,7 +149,7 @@ namespace Peristaltic_Haptic_Gui
             }
 
             var generatedWaveForm = WaveformGenerator.Generate(waveformType, fc, period, amplitude, maxAmplitude);
-            foreach (var el in generatedWaveForm) waveForm.Points.AddXY(el.xValue, el.yValue);
+            foreach (var el in generatedWaveForm) waveForm.Points.AddXY(el.XValue, el.YValue);
             ChartFirstServo.Series.Add(waveForm);
             ChartFirstServo.Series.Add(xAxisWaveForm);
             ChartFirstServo.ChartAreas[0].AxisX.Minimum = 0;
@@ -172,22 +175,6 @@ namespace Peristaltic_Haptic_Gui
                 }
             }
         }
-
-        /* private void PhaseBox_Click(object sender, EventArgs e)
-         {
-             var value = phaseBox.Text;
-             if (value.Length > 0)
-             {
-                 var result = double.TryParse(value, out var newPhase);
-                 if (result && newPhase <= maxPhase && newPhase >= minPhase)
-                 {
-                     var convertedValue = newPhase * Math.PI / 180;//phase has to be in radians
-                     if (convertedValue < 0) phase = convertedValue + 2 * Math.PI;
-                     else phase = convertedValue;
-                     CalculateWaveform();
-                 }
-             }
-         }*/
         private void AmplitudeBox_Click(object sender, EventArgs e)
         {
             var value = amplitudeBox.Text;
@@ -221,11 +208,10 @@ namespace Peristaltic_Haptic_Gui
 
         private void SendButton_Click(object sender, EventArgs e)
         {
-            var replayer = new Replayer(minDegree, maxDegree);
-            //var dataPointValues = waveForm.Points.Select(el => new Datapoint(el.XValue, el.YValues.First() / 100));
+            var replayer = new HerkulexAsyncReplayer(minDegree, maxDegree);
             try
             {
-                replayer.StartSeries(waveformType, fc, maxAmplitudeInDec, amplitudeInDec, period, myServos);
+                replayer.StartSeries(waveformType, fc, maxAmplitudeInDec, amplitudeInDec, period, myServos, false, startServo);
             }
             catch (Exception exception)
             {
@@ -237,8 +223,9 @@ namespace Peristaltic_Haptic_Gui
 
         private void OpenButton_Click(object sender, EventArgs e)
         {
-            // if (InitializeServos() && InitializeBattery())
-            if (InitializeBattery())
+            //if (InitializeServos() && InitializeBattery())
+            //if (InitializeBattery()) 
+            if (true)
             {
                 EnableDependantButtons();
             }
@@ -288,27 +275,34 @@ namespace Peristaltic_Haptic_Gui
 
             try
             {
-                for (int i = 0; i < myConnectors.Count; i++)
+                if (selectedComPorts != null)
                 {
-                    if (selectedServoPortsList[i].Length > 0)
+                    if (myHerkulexInterface12 == null || myHerkulexInterface34 == null ||
+                        myHerkulexInterface56 == null || myHerkulexInterface78 == null)
                     {
-                        if (myConnectors[i] == null)
+                        myHerkulexInterface12 = new HerkulexInterface(selectedComPorts.port12, baudrate);
+                        myHerkulexInterface34 = new HerkulexInterface(selectedComPorts.port34, baudrate);
+                        myHerkulexInterface56 = new HerkulexInterface(selectedComPorts.port56, baudrate);
+                        myHerkulexInterface78 = new HerkulexInterface(selectedComPorts.port78, baudrate);
+                        myConnectors = new List<HerkulexInterface>()
                         {
-                            myConnectors[i] = new HerkulexInterfaceConnector(selectedServoPorts[i], baudrate);
-                        }
-                        else
-                        {
-                            myConnectors[i].Reopen();
-                        }
+                            myHerkulexInterface12, myHerkulexInterface34, myHerkulexInterface56, myHerkulexInterface78
+                        };
+
                     }
                     else
                     {
-                        var exception = new InvalidOperationException("You did not selected all COM-ports.");
-                        throw exception;
-
+                        foreach (var port in myConnectors)
+                        {
+                            port.Reopen();
+                        }
                     }
                 }
-
+                else
+                {
+                    var exception = new InvalidOperationException("You did not selected all COM-ports.");
+                    throw exception;
+                }
             }
             catch (Exception e)
             {
@@ -317,12 +311,12 @@ namespace Peristaltic_Haptic_Gui
                 return false;
             }
 
-            myServos = new List<HerkulexServo>()
+            myServos = new List<IHerkulexServo>()
             {
-                new HerkulexServo(1, myHerkulexInterface12), new HerkulexServo(2, myHerkulexInterface12),
-                new HerkulexServo(3, myHerkulexInterface34), new HerkulexServo(4, myHerkulexInterface34),
-                new HerkulexServo(5, myHerkulexInterface56), new HerkulexServo(6, myHerkulexInterface56),
-                new HerkulexServo(7, myHerkulexInterface78), new HerkulexServo(8, myHerkulexInterface78)
+                new HerkulexDrs0602(1, myHerkulexInterface12), new HerkulexDrs0602(2, myHerkulexInterface12),
+                new HerkulexDrs0602(3, myHerkulexInterface34), new HerkulexDrs0602(4, myHerkulexInterface34),
+                new HerkulexDrs0602(5, myHerkulexInterface56), new HerkulexDrs0602(6, myHerkulexInterface56),
+                new HerkulexDrs0602(7, myHerkulexInterface78), new HerkulexDrs0602(8, myHerkulexInterface78)
             };
             try
             {
@@ -355,21 +349,21 @@ namespace Peristaltic_Haptic_Gui
 
             }
 
-            var taskList = new List<Task>();
+            var threadList = new List<Thread>();
             foreach (var servo in myServos)
             {
-                var myServoTask = new Task(() => servo.MoveToNeutralPosition());
-                taskList.Add(myServoTask);
+                var myServoTask = new Thread(() => servo.MoveToNeutralPosition());
+                threadList.Add(myServoTask);
                 myServoTask.Start();
             }
 
-            Task.WaitAll(taskList.ToArray());
+            foreach (var thread in threadList) thread.Join();
             return true;
         }
 
         private void MaxButton_Click(object sender, EventArgs e)
         {
-            var replayer = new Replayer(minDegree, maxDegree);
+            var replayer = new HerkulexAsyncReplayer(minDegree, maxDegree);
             try
             {
                 replayer.Move2Position(amplitudeInDec, myServos);
@@ -383,7 +377,7 @@ namespace Peristaltic_Haptic_Gui
 
         private void MinButton_Click(object sender, EventArgs e)
         {
-            var replayer = new Replayer(minDegree, maxDegree);
+            var replayer = new HerkulexAsyncReplayer(minDegree, maxDegree);
             try
             {
                 replayer.Move2Position(maxAmplitudeInDec - amplitudeInDec, myServos);
@@ -528,7 +522,6 @@ namespace Peristaltic_Haptic_Gui
 
         private void BatteryUpdate()
         {
-            // batteryLevel = 100;
             var displayString = "Battery: " + batteryLevel + "%"; ;
             if (batteryLevel >= 40)
             {
@@ -559,8 +552,12 @@ namespace Peristaltic_Haptic_Gui
         private void TimerEventProcessor(Object myObject,
             EventArgs myEventArgs)
         {
-            var batteryPercent = arduinoBattery.GetBatteryVoltage() * 100;
-            batteryLevel = batteryPercent;
+            var batteryPercent = 0.0;
+            var batteryThread = new Thread(() =>
+                batteryPercent = arduinoBattery.GetBatteryPercentage() * 100);
+            batteryThread.Start();
+            batteryThread.Join();
+            batteryLevel = Math.Round(batteryPercent, 0);
             BatteryUpdate();
 
         }
@@ -576,6 +573,21 @@ namespace Peristaltic_Haptic_Gui
                                                     $" selected {startServoValue}.");
             }
             startServo = startServoValue;
+        }
+
+        private void peristalticMotion_Checkbox_Click(object sender, EventArgs e)
+        {
+            if (peristalticMotion_Checkbox.Checked)
+            {
+                spatialOnlyPattern = false;
+                startServoTrackBar.Enabled = true;
+            }
+            else if (!peristalticMotion_Checkbox.Checked)
+            {
+                spatialOnlyPattern = true;
+                startServoTrackBar.Enabled = false;
+            }
+
         }
     }
 }

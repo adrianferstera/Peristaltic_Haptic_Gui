@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using HerkulexGuiMapper;
-using HerkulexApi;
+using HerkulexApi; 
 
-namespace HerkulexApi
+namespace HerkulexGuiMapper
 {
     public class HerkulexAsyncReplayer
     {

@@ -66,6 +66,7 @@
             this.startServoTrackBar = new System.Windows.Forms.TrackBar();
             this.startServoSelection_Label = new System.Windows.Forms.Label();
             this.peristalticMotion_Checkbox = new System.Windows.Forms.CheckBox();
+            this.SoftwareEngineer = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.ChartFirstServo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.startServoTrackBar)).BeginInit();
             this.SuspendLayout();
@@ -419,12 +420,23 @@
             this.peristalticMotion_Checkbox.UseVisualStyleBackColor = true;
             this.peristalticMotion_Checkbox.Click += new System.EventHandler(this.peristalticMotion_Checkbox_Click);
             // 
+            // SoftwareEngineer
+            // 
+            this.SoftwareEngineer.AutoSize = true;
+            this.SoftwareEngineer.Font = new System.Drawing.Font("Arial", 7F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SoftwareEngineer.Location = new System.Drawing.Point(779, 570);
+            this.SoftwareEngineer.Name = "SoftwareEngineer";
+            this.SoftwareEngineer.Size = new System.Drawing.Size(161, 13);
+            this.SoftwareEngineer.TabIndex = 46;
+            this.SoftwareEngineer.Text = "Engineered by Adrian Ferstera ©";
+            // 
             // PeristalticHapticActuator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(942, 585);
+            this.Controls.Add(this.SoftwareEngineer);
             this.Controls.Add(this.peristalticMotion_Checkbox);
             this.Controls.Add(this.startServoSelection_Label);
             this.Controls.Add(this.startServoTrackBar);
@@ -508,6 +520,7 @@
         private System.Windows.Forms.TrackBar startServoTrackBar;
         private System.Windows.Forms.Label startServoSelection_Label;
         private System.Windows.Forms.CheckBox peristalticMotion_Checkbox;
+        private System.Windows.Forms.Label SoftwareEngineer;
     }
 }
 

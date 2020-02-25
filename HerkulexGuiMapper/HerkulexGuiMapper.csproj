@@ -5,11 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Arduino">
-      <HintPath>..\..\..\..\Desktop\Arduino.dll</HintPath>
-    </Reference>
     <Reference Include="HerkulexApi">
-      <HintPath>..\..\..\..\Desktop\HerkulexApi.dll</HintPath>
+      <HintPath>..\dll\HerkulexApi.dll</HintPath>
     </Reference>
   </ItemGroup>
 

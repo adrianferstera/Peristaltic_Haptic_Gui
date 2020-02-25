@@ -559,7 +559,8 @@ namespace Peristaltic_Haptic_Gui
             {
                 throw new InvalidOperationException("The start servo you have selected is out of range." +
                                                     "You can choose servos between 1 and 8, you have" +
-                                                    $" selected {startServoValue}.");
+                                                    $" selected {startServoValue}. If you have any question, " +
+                                                    $"you should ask Stejara or me (Adrian), but do not ask Mengjia. She has no clue");
             }
             startServo = startServoValue;
         }

@@ -37,13 +37,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Arduino">
-      <HintPath>..\..\..\..\Desktop\Arduino.dll</HintPath>
+      <HintPath>..\dll\Arduino.dll</HintPath>
     </Reference>
     <Reference Include="Costura, Version=4.0.0.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
       <HintPath>..\packages\Costura.Fody.4.0.0\lib\net40\Costura.dll</HintPath>
     </Reference>
     <Reference Include="HerkulexApi">
-      <HintPath>..\..\HerkulexApi\HerkulexApi\bin\Debug\HerkulexApi.dll</HintPath>
+      <HintPath>..\dll\HerkulexApi.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

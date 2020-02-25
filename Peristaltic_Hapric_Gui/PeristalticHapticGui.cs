@@ -17,16 +17,10 @@ namespace Peristaltic_Haptic_Gui
         private static double fc = 1;
         private double maxFc = 5;
         private double minFc = 0;
-
-        private const int DefaultMinDegree = -60;
-        private const int DefaultMaxDegree = 60;
-
-
-
         private static double amplitude = 100;
         private static double maxAmplitude = 100;
         private static double minAmplitude = 0;
-        private static int baudrate = 115200;
+        private static int baudrate = 57600;
         private double amplitudeInDec => amplitude / 100;
         private double maxAmplitudeInDec => maxAmplitude / 100;
 
@@ -41,8 +35,8 @@ namespace Peristaltic_Haptic_Gui
         private static double maxPeriod = 100;
         private static double minPeriod = 0;
 
-        private double minDegree;
-        private double maxDegree;
+        private readonly double minDegree = -60;//only between -60 and 30, otherwise you are going to destroy the hardware
+        private readonly double maxDegree = 30;
         private string[] selectedServoPorts => selectedServoPortsList.ToArray();
         private List<string> selectedServoPortsList;
         private bool spatialOnlyPattern = false;
@@ -84,8 +78,6 @@ namespace Peristaltic_Haptic_Gui
                 triangleRadioButton, sinRadioButton, sineTriangleRadioButton, triangleRadioButton,
                 negativeSawtoothRadioButton, positiveSawtoothRadioButton
             };
-            minDegree = -60; //only between -60 and 60, otherwise you are going to destroy the hardware
-            maxDegree = -minDegree;
             frequencyBox.Text = fc.ToString(CultureInfo.CurrentCulture);
             amplitudeBox.Text = amplitude.ToString(CultureInfo.CurrentCulture);
             //  phaseBox.Text = phase.ToString(CultureInfo.CurrentCulture);
@@ -99,6 +91,7 @@ namespace Peristaltic_Haptic_Gui
             startServoTrackBar.Minimum = 1;
             startServoTrackBar.TickFrequency = 1;
             startServoTrackBar.Value = startServo;
+
         }
 
         private void EnableMainButtons()
@@ -120,7 +113,7 @@ namespace Peristaltic_Haptic_Gui
             Max.Enabled = true;
             Min.Enabled = true;
             peristalticMotion_Checkbox.Enabled = true;
-            peristalticMotion_Checkbox.Checked = true;
+            peristalticMotion_Checkbox.Checked = !spatialOnlyPattern;
             startServoTrackBar.Enabled = true;
             DisableMainButtons();
         }
@@ -185,8 +178,6 @@ namespace Peristaltic_Haptic_Gui
                 {
                     amplitude = newAmplitude;
                     CalculateWaveform();
-                    maxDegree = DefaultMaxDegree * amplitude / 100;
-                    minDegree = DefaultMinDegree * amplitude / 100;
                 }
 
             }
@@ -211,7 +202,7 @@ namespace Peristaltic_Haptic_Gui
             var replayer = new HerkulexAsyncReplayer(minDegree, maxDegree);
             try
             {
-                replayer.StartSeries(waveformType, fc, maxAmplitudeInDec, amplitudeInDec, period, myServos, false, startServo);
+                replayer.StartSeries(waveformType, fc, maxAmplitudeInDec, amplitudeInDec, period, myServos, !spatialOnlyPattern, startServo);
             }
             catch (Exception exception)
             {
@@ -223,9 +214,9 @@ namespace Peristaltic_Haptic_Gui
 
         private void OpenButton_Click(object sender, EventArgs e)
         {
-            //if (InitializeServos() && InitializeBattery())
+            if (InitializeServos() && InitializeBattery())
             //if (InitializeBattery()) 
-            if (true)
+           // if (true)
             {
                 EnableDependantButtons();
             }
@@ -249,13 +240,13 @@ namespace Peristaltic_Haptic_Gui
             }
             catch (Exception e)
             {
-                KillAllConnectors();
+                arduinoBattery?.Close();
                 MessageBox.Show(e.Message);
                 return false;
             }
             myTimer.Tick += new EventHandler(TimerEventProcessor);
             // Sets the timer interval to 10 seconds.
-            myTimer.Interval = 10000;
+            myTimer.Interval = 60000;
             myTimer.Start();
             TimerEventProcessor(this, new EventArgs()); //let it run once 
             return true;
@@ -322,12 +313,12 @@ namespace Peristaltic_Haptic_Gui
             {
                 foreach (var myServo in myServos)
                 {
-                    var status = myServo.Status();
+                   /* var status = myServo.Status();
                     if (status)
                     {
                         myServo.SetColor(HerkulexColor.GREEN);
                     }
-                    else myServo.SetColor(HerkulexColor.RED);
+                    else myServo.SetColor(HerkulexColor.RED);*/
                 }
             }
             catch (TimeoutException e)

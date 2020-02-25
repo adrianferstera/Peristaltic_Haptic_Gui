@@ -7,7 +7,6 @@ using System.Windows.Forms;
 using ArduinoConnector;
 using HerkulexApi;
 using HerkulexGuiMapper;
-using Peristaltic_Haptic_Gui;
 using Timer = System.Windows.Forms.Timer;
 
 namespace Peristaltic_Haptic_Gui
@@ -43,7 +42,6 @@ namespace Peristaltic_Haptic_Gui
 
         private double batteryLevel = -1;
         private int startServo = 1; //start servo between 1 and 8
-        private double maximumBatteryVoltage = 14.8;
         private Arduino arduinoBattery;
         private Timer myTimer = new Timer();
 

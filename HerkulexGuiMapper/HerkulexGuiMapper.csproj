@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Arduino">
+      <HintPath>..\..\..\..\Desktop\Arduino.dll</HintPath>
+    </Reference>
+    <Reference Include="HerkulexApi">
+      <HintPath>..\..\..\..\Desktop\HerkulexApi.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

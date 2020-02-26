@@ -42,6 +42,7 @@
             this.labelServo78 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.Description = new System.Windows.Forms.Label();
+            this.SoftwareEngineer = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // comboServo78
@@ -164,11 +165,22 @@
             this.Description.Text = "Please select the correct COM-Ports for each servo-pair. \r\nIf you do not know, wh" +
     "ich servo is connected to which COM port, have a look in the Device Manager";
             // 
+            // SoftwareEngineer
+            // 
+            this.SoftwareEngineer.AutoSize = true;
+            this.SoftwareEngineer.Font = new System.Drawing.Font("Arial", 7F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SoftwareEngineer.Location = new System.Drawing.Point(419, 128);
+            this.SoftwareEngineer.Name = "SoftwareEngineer";
+            this.SoftwareEngineer.Size = new System.Drawing.Size(161, 13);
+            this.SoftwareEngineer.TabIndex = 47;
+            this.SoftwareEngineer.Text = "Engineered by Adrian Ferstera ©";
+            // 
             // ConnectingSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(590, 137);
+            this.ClientSize = new System.Drawing.Size(590, 145);
+            this.Controls.Add(this.SoftwareEngineer);
             this.Controls.Add(this.Description);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.labelServo78);
@@ -205,5 +217,6 @@
         private System.Windows.Forms.Label labelServo78;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label Description;
+        private System.Windows.Forms.Label SoftwareEngineer;
     }
 }

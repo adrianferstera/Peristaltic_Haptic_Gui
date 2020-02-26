@@ -1,4 +1,9 @@
-﻿using System;
+﻿/*
+This file was created by Adrian Ferstera
+Email: adrian@ferstera.com
+Standard MIT License
+*/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using HerkulexApi;
@@ -7,51 +12,51 @@ namespace HerkulexGuiMapper
 {
     public class WaveformGenerator
     {
-        public static IEnumerable<HerkulexDatapoint> Generate(WaveformType type, double fc, double period,
+        public static IEnumerable<HerkulexDatapoint> Generate(WaveformType type, double fc, double playCycles,
             double amplitude, double maxAmplitude)
         {
             var appointList = new List<HerkulexDatapoint>();
             if (type == WaveformType.NegativeSawtooth)
-                appointList = CalculateNegativeSawtoothWave(period, fc, amplitude);
+                appointList = CalculateNegativeSawtoothWave(playCycles, fc, amplitude);
             if (type == WaveformType.PositiveSawtooth)
-                appointList = CalculatePositiveSawtoothWave(period, fc, amplitude);
+                appointList = CalculatePositiveSawtoothWave(playCycles, fc, amplitude);
             if (type == WaveformType.Sine)
-                appointList = CalculateSineWave(period, fc, amplitude);
+                appointList = CalculateSineWave(playCycles, fc, amplitude);
             if (type == WaveformType.Triangle)
-                appointList = CalculateTriangleWave(period, fc, amplitude);
+                appointList = CalculateTriangleWave(playCycles, fc, amplitude);
             if (type == WaveformType.SineTriangle)
-                appointList = CalculateSineTriangle(period, fc, amplitude);
+                appointList = CalculateSineTriangle(playCycles, fc, amplitude);
             if (type == WaveformType.TriangleSine)
-                appointList = CalculateTriangleSine(period, fc, amplitude);
+                appointList = CalculateTriangleSine(playCycles, fc, amplitude);
 
             return appointList;
         }
-        public static IEnumerable<HerkulexDatapoint> GeneratePlayValues(WaveformType type, double fc, double period,
+        public static IEnumerable<HerkulexDatapoint> GeneratePlayValues(WaveformType type, double fc, double playCycles,
             double amplitude, double maxAmplitude)
         {
             var appointList = new List<HerkulexDatapoint>();
             if (type == WaveformType.NegativeSawtooth)
-                appointList = CalculateNegativeSawtoothWave(period, fc, amplitude, true);
+                appointList = CalculateNegativeSawtoothWave(playCycles, fc, amplitude, true);
             if (type == WaveformType.PositiveSawtooth)
-                appointList = CalculatePositiveSawtoothWave(period, fc, amplitude, true);
+                appointList = CalculatePositiveSawtoothWave(playCycles, fc, amplitude, true);
             if (type == WaveformType.Sine)
-                appointList = CalculateSineWave(period, fc, amplitude, true);
+                appointList = CalculateSineWave(playCycles, fc, amplitude, true);
             if (type == WaveformType.Triangle)
-                appointList = CalculateTriangleWave(period, fc, amplitude, true);
+                appointList = CalculateTriangleWave(playCycles, fc, amplitude, true);
             if (type == WaveformType.SineTriangle)
-                appointList = CalculateSineTriangle(period, fc, amplitude, true);
+                appointList = CalculateSineTriangle(playCycles, fc, amplitude, true);
             if (type == WaveformType.TriangleSine)
-                appointList = CalculateTriangleSine(period, fc, amplitude, true);
+                appointList = CalculateTriangleSine(playCycles, fc, amplitude, true);
 
             return appointList;
         }
-        private static List<HerkulexDatapoint> CalculateTriangleWave(double period, double fc, double amplitude, bool forServo = false)
+        private static List<HerkulexDatapoint> CalculateTriangleWave(double playCycles, double fc, double amplitude, bool forServo = false)
         {
             var triangleWave = new List<HerkulexDatapoint>();
             triangleWave.Add(new HerkulexDatapoint(0, 0));
             if (forServo)
             {
-                for (int i = 0; i < period * fc; i++)
+                for (int i = 0; i < playCycles * fc; i++)
                 {
                     var gabs = 1.0 / fc;
                     triangleWave.Add(new HerkulexDatapoint((gabs / 2),
@@ -61,7 +66,7 @@ namespace HerkulexGuiMapper
                 }
                 return triangleWave;
             }
-            for (int i = 0; i < period * fc; i++)
+            for (int i = 0; i < playCycles * fc; i++)
             {
                 var gabs = 1.0 / fc;
                 var counterDouble = Convert.ToDouble(i);
@@ -71,11 +76,11 @@ namespace HerkulexGuiMapper
             }
             return triangleWave;
         }
-        private static List<HerkulexDatapoint> CalculateNegativeSawtoothWave(double period, double fc, double amplitude, bool forServo = false)
+        private static List<HerkulexDatapoint> CalculateNegativeSawtoothWave(double playCycles, double fc, double amplitude, bool forServo = false)
         {
             var sawTooths = new List<HerkulexDatapoint>();
             sawTooths.Add(new HerkulexDatapoint(0, 0));
-            for (int i = 1; i <= period * fc; i++)
+            for (int i = 1; i <= playCycles * fc; i++)
             {
                 var counterDouble = Convert.ToDouble(i);
                 if (forServo)
@@ -93,11 +98,11 @@ namespace HerkulexGuiMapper
             return sawTooths;
         }
 
-        private static List<HerkulexDatapoint> CalculatePositiveSawtoothWave(double period, double fc, double amplitude, bool forServo = false)
+        private static List<HerkulexDatapoint> CalculatePositiveSawtoothWave(double playCycles, double fc, double amplitude, bool forServo = false)
         {
             var sawTooths = new List<HerkulexDatapoint>();
             sawTooths.Add(new HerkulexDatapoint(0, 0));
-            for (int i = 1; i <= period * fc; i++)
+            for (int i = 1; i <= playCycles * fc; i++)
             {
                 var gabs = 1.0 / fc;
                 var counterDouble = Convert.ToDouble(i);
@@ -115,16 +120,16 @@ namespace HerkulexGuiMapper
             return sawTooths;
         }
 
-        private static List<HerkulexDatapoint> CalculateSineWave(double period, double fc, double amplitude, bool forServo = false)
+        private static List<HerkulexDatapoint> CalculateSineWave(double playCycles, double fc, double amplitude, bool forServo = false)
         {
             if (forServo)
             {
-                var sineReplayServo = CalculateTriangleWave(period, fc, amplitude, true);
-                return sineReplayServo.Select(el => new HerkulexDatapoint(el.XValue, el.YValue) { AccelerationRatio = 80 }).ToList();
+                var sineReplayServo = CalculateTriangleWave(playCycles, fc, amplitude, true);
+                return sineReplayServo.Select(el => new HerkulexDatapoint(el.XValue, el.YValue) { AccelerationRatio = 50 }).ToList();
             }
             var yAxisShift = amplitude / 2;
             var sinData = new List<HerkulexDatapoint>();
-            for (int i = 0; i <= period * 1000; i++)
+            for (int i = 0; i <= playCycles * 1000; i++)
             {
                 var doubleCounter = Convert.ToDouble(i) / 1000;
                 sinData.Add(new HerkulexDatapoint(doubleCounter,
@@ -133,17 +138,17 @@ namespace HerkulexGuiMapper
             return sinData;
         }
 
-        private static List<HerkulexDatapoint> CalculateSineTriangle(double period, double fc, double amplitude, bool forServo = false)
+        private static List<HerkulexDatapoint> CalculateSineTriangle(double playCycles, double fc, double amplitude, bool forServo = false)
         {
             if (forServo)
             {
-                var sineTriangleReplayServo = CalculateTriangleWave(period, fc, amplitude, true);
+                var sineTriangleReplayServo = CalculateTriangleWave(playCycles, fc, amplitude, true);
                 var indexAcceleration = false;
                 for (int i = 0; i < sineTriangleReplayServo.Count; i++)
                 {
                     if (indexAcceleration)
                     {
-                        sineTriangleReplayServo[i].AccelerationRatio = 80;
+                        sineTriangleReplayServo[i].AccelerationRatio = 50;
                         indexAcceleration = false;
                     }
                     else indexAcceleration = true;
@@ -154,7 +159,7 @@ namespace HerkulexGuiMapper
             var yAxisShift = amplitude / 2;
             var sinData = new List<HerkulexDatapoint>();
             var resolution = 100;
-            for (int i = 0; i < period * fc; i++)
+            for (int i = 0; i < playCycles * fc; i++)
             {
                 var doubleCounter = Convert.ToDouble(i);
                 for (int j = 0; j < resolution; j++)
@@ -167,17 +172,17 @@ namespace HerkulexGuiMapper
             }
             return sinData;
         }
-        private static List<HerkulexDatapoint> CalculateTriangleSine(double period, double fc, double amplitude, bool forServo = false)
+        private static List<HerkulexDatapoint> CalculateTriangleSine(double playCycles, double fc, double amplitude, bool forServo = false)
         {
             if (forServo)
             {
-                var sineTriangleReplayServo = CalculateTriangleWave(period, fc, amplitude, true);
+                var sineTriangleReplayServo = CalculateTriangleWave(playCycles, fc, amplitude, true);
                 var indexAcceleration = true;
                 for (int i = 0; i < sineTriangleReplayServo.Count; i++)
                 {
                     if (indexAcceleration)
                     {
-                        sineTriangleReplayServo[i].AccelerationRatio = 80;
+                        sineTriangleReplayServo[i].AccelerationRatio = 50;
                         indexAcceleration = false;
                     }
                     else indexAcceleration = true;
@@ -188,7 +193,7 @@ namespace HerkulexGuiMapper
             var sinData = new List<HerkulexDatapoint>();
             var resolution = 100;
             sinData.Add(new HerkulexDatapoint(0, 0));
-            for (int i = 0; i < period * fc; i++)
+            for (int i = 0; i < playCycles * fc; i++)
             {
                 var doubleCounter = Convert.ToDouble(i);
                 sinData.Add(new HerkulexDatapoint((doubleCounter + 0.5) / fc, amplitude));

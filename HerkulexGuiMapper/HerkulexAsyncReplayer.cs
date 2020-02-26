@@ -1,4 +1,8 @@
-﻿using System;
+﻿/*
+This file was created by Adrian Ferstera
+Email: adrian@ferstera.com
+Standard MIT License
+*/using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -18,12 +22,12 @@ namespace HerkulexGuiMapper
             minLimDegrees = minLimit;
             maxLimDegrees = maxLimit;
         }
-       public void StartSeries(WaveformType type, double fc, double maxAmplitude, double amplitude, double period, List<IHerkulexServo> servos, bool spatialOnlyPattern = false, int startServo = 1)
+       public void StartSeries(WaveformType type, double fc, double maxAmplitude, double amplitude, double playCycles, List<IHerkulexServo> servos, bool spatialOnlyPattern = false, int startServo = 1)
         {
            var T = Convert.ToInt32(1 / fc * 1000); //T in ms
             var pauseTimeBetweenServos = 0;
             if (spatialOnlyPattern) pauseTimeBetweenServos = T / servos.Count;
-            var playValues = WaveformGenerator.GeneratePlayValues(type, fc, period, amplitude, maxAmplitude).ToList();
+            var playValues = WaveformGenerator.GeneratePlayValues(type, fc, playCycles, amplitude, maxAmplitude).ToList();
             var playValuesForServos = playValues.Select(el =>
                 new HerkulexDatapoint(el.XValue * 1000, Map2ServoValue(maxLimDegrees, minLimDegrees, 1, 0, el.YValue))
                     { AccelerationRatio = el.AccelerationRatio }).ToList();

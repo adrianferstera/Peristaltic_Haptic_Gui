@@ -1,4 +1,9 @@
-﻿using System;
+﻿/*
+This file was created by Adrian Ferstera
+Email: adrian@ferstera.com
+Standard MIT License
+*/
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;

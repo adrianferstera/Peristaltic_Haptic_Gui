@@ -1,4 +1,9 @@
-﻿using System.Collections.Generic;
+﻿/*
+This file was created by Adrian Ferstera
+Email: adrian@ferstera.com
+Standard MIT License
+*/
+using System.Collections.Generic;
 using HerkulexApi;
 using HerkulexGuiMapper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

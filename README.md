@@ -8,7 +8,7 @@ Supervisor: [Retouch Lab](http://re-touch-lab.com/), CNSI, University of Califor
 
 ### Description
 This solution creates a graphical user interface (GUI) to control 8 HerkuleX Smart Robot Servos asynchronously. Each servo is connected to a low pressure pump which is then connected to a wearable sleeve.
-By increase the pressure inside the tube, the tube elongates and vice versa. By increasing and decreasing the pressure inside the tubes, different kind of wave pattern can be applied to this wearable sleeve. 
+By increasing the pressure inside the tube, the tube elongates and vice versa. With this increasing and decreasing procedure, different kind of wave patterns can be applied to the wearable sleeve. 
 
 ### Using the Herkulex Gui Mapper 
 This class uses 8 HerkuleX DRS 0602 to asynchrounsly perform different kind of wave patterns on the wearable sleeve.  Therefore, the 8 servos need to have ID's between 1 and 8. 

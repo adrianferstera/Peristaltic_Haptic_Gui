@@ -6,6 +6,14 @@ This C# solution was part of my master thesis in mechanical Engineering. It was 
 Thesis: Multichannel Hydraulic Control for Textile-Based Soft Robotics
 Supervisor: [Retouch Lab](http://re-touch-lab.com/), CNSI, University of California at Santa Barbara 
 
+## Publication 
+This project was part of a Hands-on demonstration<sup>1</sup> and a Work-In-Progress Paper<sup>2</sup> during the IEEE Haptic Symposium 2020, Washington D.C., United States. 
+<sup>1</sup>M. Zhu, A. Ferstera, S. Dinulescu, N. Kastor, and Y. Visell. Composing peristaltic motion: Wearable haptic feedback from fuidic fabric muscle actuators. *Hands-on Demonstration, IEEE Haptics Symposium, Washington
+D.C., USA, 2020.*
+<sup>2</sup>M. Zhu, A. Ferstera, S. Dinulescu, N. Kastor, and Y. Visell. Wearable haptic feedback from fuidic fabric muscle actuators: Composing peristaltic motion. *Work-In-Progress Paper, IEEE Haptics Symposium, Washington
+D.C., USA, 2020.*
+
+
 ### Description
 This solution creates a graphical user interface (GUI) to control 8 HerkuleX Smart Robot Servos asynchronously. Each servo is connected to a low pressure pump which is then connected to a wearable sleeve.
 By increasing the pressure inside the tube, the tube elongates and vice versa. With this increasing and decreasing procedure, different kind of wave patterns can be applied to the wearable sleeve. 

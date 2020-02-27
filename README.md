@@ -67,6 +67,10 @@ var replayer = new HerkulexAsyncReplayer(-60, 0);
 // current amplitude of 1, how many times this sequence should be repeated (here 10 times), 
 // for the servos defined in the list `myServos`
 replayer.StartSeries(WaveformType.Sine, 0.5, 1, 1, 10, myServos);
+
+// Close all interfaces 
+ foreach (var myHerkulexInterface in myInterfaces)  myHerkulexInterface.Close();           
+               
 ```
 
 

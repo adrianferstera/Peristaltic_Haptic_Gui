@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using HerkulexApi;
+using HerkulexGuiMapper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace HerkulexApiTest
@@ -105,6 +106,19 @@ namespace HerkulexApiTest
                 Assert.IsTrue(status);
             }
 
+        }
+        [TestMethod]
+        public void TestGuiMapper()
+        {
+            foreach (var servo in myServos)
+            {
+                servo.TorqueOn();
+                servo.NeutralPosition = -60;
+            }
+
+            var replayer = new HerkulexAsyncReplayer(-60, 0);
+            //replayer.Move2Position(0.5, myServos);
+            replayer.StartSeries(WaveformType.Triangle, 0.5, 1, 1, 10, myServos, true, 4);
         }
 
 

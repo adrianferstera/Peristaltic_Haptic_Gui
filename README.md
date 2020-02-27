@@ -47,8 +47,10 @@ Please have a look in my other repository for a better explanation of using the 
  var myServo8 = new HerkulexDrs0602(8, myHerkulexInterface78);
 
  // Make a list with all interfaces and servos
- var myServos = new List<IHerkulexServo>() { myServo1, myServo2, myServo3, myServo4, myServo5, myServo6, myServo7, myServo8 };
- var myInterfaces = new List<HerkulexInterface>() { myHerkulexInterface12, myHerkulexInterface34, myHerkulexInterface56, myHerkulexInterface78 };
+ var myServos = new List<IHerkulexServo>() 
+     { myServo1, myServo2, myServo3, myServo4, myServo5, myServo6, myServo7, myServo8 };
+ var myInterfaces = new List<HerkulexInterface>() 
+     { myHerkulexInterface12, myHerkulexInterface34, myHerkulexInterface56, myHerkulexInterface78 };
 
 // Enable torque and adjust the servos neutral position (depending on the application)
  foreach (var servo in myServos)
@@ -61,7 +63,8 @@ Please have a look in my other repository for a better explanation of using the 
 var replayer = new HerkulexAsyncReplayer(-60, 0);
 
 // Perform a sine waveform sequence with frequency 0.5, maximal possible amplitude of 1, 
-// current amplitude of 1, how many times this sequence should be repeated (here 10 times), for the servos defined in the list `myServos`
+// current amplitude of 1, how many times this sequence should be repeated (here 10 times), 
+// for the servos defined in the list `myServos`
 replayer.StartSeries(WaveformType.Sine, 0.5, 1, 1, 10, myServos);
 ```
 

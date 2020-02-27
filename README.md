@@ -59,7 +59,8 @@ Please have a look in my other repository for a better explanation of using the 
      servo.NeutralPosition = -60;
  }
 
- // Initialize an instance of the Herkulex Async Replayer by defining the servos limits (depending on its application)
+ // Initialize an instance of the Herkulex Async Replayer 
+ // by defining the servos limits (depending on its application)
 var replayer = new HerkulexAsyncReplayer(-60, 0);
 
 // Perform a sine waveform sequence with frequency 0.5, maximal possible amplitude of 1, 

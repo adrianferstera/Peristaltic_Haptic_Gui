@@ -23,7 +23,7 @@ This class uses 8 HerkuleX DRS 0602 to asynchrounsly perform different kind of w
 ## Using the software
 
 Following examples can be used to run the servos. All examples below can be found in the Unit Test Folder. 
-Please have a look in my other repository for a better explanation of using the [HerkuleX API](https://github.com/adrianferstera/HerkulexApi). 
+Please have a look into my other repository for a better explanation of using the [HerkuleX API](https://github.com/adrianferstera/HerkulexApi). 
 
 
 ## Examples

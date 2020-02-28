@@ -10,6 +10,9 @@ using HerkulexApi;
 
 namespace HerkulexGuiMapper
 {
+    /// <summary>
+    /// A class to control asynchronously a number of servos.  
+    /// </summary>
     public class HerkulexAsyncReplayer
     {
 
@@ -17,21 +20,42 @@ namespace HerkulexGuiMapper
         private double maxLimDegrees;
 
 
+
+        /// <summary>
+        /// Initializes an instance of the HerkuleX Async Replayer class to asynchronously control several servos at the same time.
+        /// </summary>
+        /// <param name="minLimit">minimum limit in degrees according to the application</param>
+        /// <param name="maxLimit">maximum limit in degrees according to the application</param>
         public HerkulexAsyncReplayer(double minLimit, double maxLimit)
         {
             minLimDegrees = minLimit;
             maxLimDegrees = maxLimit;
         }
+       /// <summary>
+       /// Performs a peristaltic motion according to the input parameters. 
+       /// </summary>
+       /// <param name="type">The type of the waveform the Async Replayer should perform</param>
+       /// <param name="fc">Frequency of the performed wave</param>
+       /// <param name="maxAmplitude">Maximum possible amplitude of the actuator</param>
+       /// <param name="amplitude">Current amplitude of the systems. Can be between 0 and maxAmplitude</param>
+       /// <param name="playCycles">How many times this section should be repeated</param>
+       /// <param name="servos">A list with all connected servos</param>
+       /// <param name="spatialOnlyPattern">If the wave should be peristaltic or spatial</param>
+       /// <param name="startServo">Startpoint of the wave. Can be between the first and last servo.</param>
        public void StartSeries(WaveformType type, double fc, double maxAmplitude, double amplitude, double playCycles, List<IHerkulexServo> servos, bool spatialOnlyPattern = false, int startServo = 1)
         {
            var T = Convert.ToInt32(1 / fc * 1000); //T in ms
             var pauseTimeBetweenServos = 0;
             if (spatialOnlyPattern) pauseTimeBetweenServos = T / servos.Count;
+            // Generate the corresponding wave for the servos
             var playValues = WaveformGenerator.GeneratePlayValues(type, fc, playCycles, amplitude, maxAmplitude).ToList();
+
+            //map the wave to degree values of the servos
             var playValuesForServos = playValues.Select(el =>
                 new HerkulexDatapoint(el.XValue * 1000, Map2ServoValue(maxLimDegrees, minLimDegrees, 1, 0, el.YValue))
                     { AccelerationRatio = el.AccelerationRatio }).ToList();
             
+            // order the replay order according to the input parameter startServo
             var replayServoOrder = OrderServoInReplayList(servos, startServo);
             var threadList = new List<List<Thread>>();
             var awaitThreadList = new List<Thread>();
@@ -63,9 +87,14 @@ namespace HerkulexGuiMapper
             }
         }
 
-        public void Move2Position(double value, List<IHerkulexServo> servos)
+        /// <summary>
+        /// Moves asynchronously all servos to a specific position
+        /// </summary>
+        /// <param name="target">Target position in degrees</param>
+        /// <param name="servos">List with all servos which should be moved</param>
+        public void Move2Position(double target, List<IHerkulexServo> servos)
         {
-            var valueInDeg = Map2ServoValue(maxLimDegrees, minLimDegrees, 1, 0, value); 
+            var valueInDeg = Map2ServoValue(maxLimDegrees, minLimDegrees, 1, 0, target); 
             var threadList = new List<Thread>();
             foreach (var servo in servos)
             {

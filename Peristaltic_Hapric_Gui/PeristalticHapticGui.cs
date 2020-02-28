@@ -76,20 +76,27 @@ namespace Peristaltic_Haptic_Gui
         private void StartupValues()
         {
             BatteryUpdate();
+
+            //The class of all waveform selection buttons are radio buttons. Add all waveform selection buttons to a list
             radioButtonList = new List<RadioButton>()
             {
                 triangleRadioButton, sinRadioButton, sineTriangleRadioButton, triangleRadioButton,
                 negativeSawtoothRadioButton, positiveSawtoothRadioButton
             };
-            frequencyBox.Text = fc.ToString(CultureInfo.CurrentCulture);
+            // default fc
+            frequencyBox.Text = fc.ToString(CultureInfo.CurrentCulture); 
+            // default amplitude
             amplitudeBox.Text = amplitude.ToString(CultureInfo.CurrentCulture);
-            //  phaseBox.Text = phase.ToString(CultureInfo.CurrentCulture);
+            // default amplitude
             periodBox.Text = period.ToString(CultureInfo.CurrentCulture);
+            // default of selected wave
             sinRadioButton.Checked = true;
             Open.BackColor = Color.LightGreen;
             Kill.BackColor = Color.Tomato;
+            // defailt com ports are null
             selectedComPorts = new HerkulexComPortSelection("", "", "", "", "");
 
+            // servo selection slider. set limits between 1 (first servo) and 8 (last servo)
             startServoTrackBar.Maximum = 8;
             startServoTrackBar.Minimum = 1;
             startServoTrackBar.TickFrequency = 1;
@@ -99,18 +106,21 @@ namespace Peristaltic_Haptic_Gui
 
         private void EnableMainButtons()
         {
+            // these button are enabled at default (when the GUI boots first)
             Open.Enabled = true;
             connectingPortsButton.Enabled = true;
         }
 
         private void DisableMainButtons()
         {
+            // Disable these buttons when the servos are successfully connected, otherwise the system will throw an error.  
             Open.Enabled = false;
             connectingPortsButton.Enabled = false;
         }
 
         private void EnableDependantButtons()
         {
+            // After successfully connected, enable these button to perform different kind of waves to the servos
             Kill.Enabled = true;
             Send.Enabled = true;
             Max.Enabled = true;
@@ -123,6 +133,7 @@ namespace Peristaltic_Haptic_Gui
 
         private void DisableDependantButtons()
         {
+            // After disconnection or at the beginning, first the communication between servos and GUI has to be established.
             Kill.Enabled = false;
             Send.Enabled = false;
             Max.Enabled = false;
@@ -134,6 +145,7 @@ namespace Peristaltic_Haptic_Gui
 
         private void CalculateWaveform()
         {
+            // calculate waveform if any input parameter has changes such as fc, amplitude, waveform type etc. 
             ChartFirstServo.Series.Clear();
             waveForm = new System.Windows.Forms.DataVisualization.Charting.Series();
             waveForm.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
@@ -227,6 +239,7 @@ namespace Peristaltic_Haptic_Gui
 
         private bool InitializeBattery()
         {
+            // Establish communication with the arduino which reads the voltage from the power source
             if (selectedComPorts == null)
             {
                 var exception = new InvalidOperationException("Did not find the connection port.\n" +
@@ -256,6 +269,7 @@ namespace Peristaltic_Haptic_Gui
         }
         private bool InitializeServos()
         {
+            // Initializes the servos
             if (selectedComPorts == null)
             {
                 var exception = new InvalidOperationException("Did not find the connection port.\n" +
@@ -314,6 +328,7 @@ namespace Peristaltic_Haptic_Gui
             };
             try
             {
+                // check the status of all servos. If returns false, if any servos according to the input parameters did not answered. 
                 foreach (var myServo in myServos)
                 {
                    /* var status = myServo.Status();
@@ -517,6 +532,7 @@ namespace Peristaltic_Haptic_Gui
         private void BatteryUpdate()
         {
             var displayString = "Battery: " + batteryLevel + "%"; ;
+            // change color of battery background according to the level
             if (batteryLevel >= 40)
             {
                 BatteryProgressLabel.BackColor = Color.Green;
@@ -550,7 +566,7 @@ namespace Peristaltic_Haptic_Gui
             var batteryThread = new Thread(() =>
                 batteryPercent = arduinoBattery.GetBatteryPercentage() * 100);
             batteryThread.Start();
-            batteryThread.Join();
+           // batteryThread.Join();
             batteryLevel = Math.Round(batteryPercent, 0);
             BatteryUpdate();
 
@@ -564,8 +580,7 @@ namespace Peristaltic_Haptic_Gui
             {
                 throw new InvalidOperationException("The start servo you have selected is out of range." +
                                                     "You can choose servos between 1 and 8, you have" +
-                                                    $" selected {startServoValue}. If you have any question, " +
-                                                    $"you should ask Stejara or me (Adrian), but do not ask Mengjia. She has no clue");
+                                                    $" selected {startServoValue}. ");
             }
             startServo = startServoValue;
         }

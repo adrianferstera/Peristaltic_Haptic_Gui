@@ -10,8 +10,20 @@ using HerkulexApi;
 
 namespace HerkulexGuiMapper
 {
+    /// <summary>
+    /// A class to generate different kind of waveforms. 
+    /// </summary>
     public class WaveformGenerator
     {
+        /// <summary>
+        /// Generates an array of waves according to the input which can be displayed in a graphical user interface. 
+        /// </summary>
+        /// <param name="type">wave type which should be generated </param>
+        /// <param name="fc">Frequency of the wave</param>
+        /// <param name="playCycles">How many times if should be repeated</param>
+        /// <param name="amplitude">Current amplitude of the wave. Can be between 0 and maxAmplitude</param>
+        /// <param name="maxAmplitude">Maximal possible amplitude</param>
+        /// <returns></returns>
         public static IEnumerable<HerkulexDatapoint> Generate(WaveformType type, double fc, double playCycles,
             double amplitude, double maxAmplitude)
         {
@@ -31,6 +43,15 @@ namespace HerkulexGuiMapper
 
             return appointList;
         }
+        /// <summary>
+        /// Generates an array of waves according to the input which can be used to apply these waves to a serries of servos. 
+        /// </summary>
+        /// <param name="type">wave type which should be generated </param>
+        /// <param name="fc">Frequency of the wave</param>
+        /// <param name="playCycles">How many times if should be repeated</param>
+        /// <param name="amplitude">Current amplitude of the wave. Can be between 0 and maxAmplitude</param>
+        /// <param name="maxAmplitude">Maximal possible amplitude</param>
+        /// <returns></returns>
         public static IEnumerable<HerkulexDatapoint> GeneratePlayValues(WaveformType type, double fc, double playCycles,
             double amplitude, double maxAmplitude)
         {

@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>HerkulexGuiMapper</name>
+    </assembly>
+    <members>
+        <member name="T:HerkulexGuiMapper.HerkulexAsyncReplayer">
+            <summary>
+            A class to control asynchronously a number of servos.  
+            </summary>
+        </member>
+        <member name="M:HerkulexGuiMapper.HerkulexAsyncReplayer.#ctor(System.Double,System.Double)">
+            <summary>
+            Initializes an instance of the HerkuleX Async Replayer class to asynchronously control several servos at the same time.
+            </summary>
+            <param name="minLimit">minimum limit in degrees according to the application</param>
+            <param name="maxLimit">maximum limit in degrees according to the application</param>
+        </member>
+        <member name="M:HerkulexGuiMapper.HerkulexAsyncReplayer.StartSeries(HerkulexGuiMapper.WaveformType,System.Double,System.Double,System.Double,System.Double,System.Collections.Generic.List{HerkulexApi.IHerkulexServo},System.Boolean,System.Int32)">
+            <summary>
+            Performs a peristaltic motion according to the input parameters. 
+            </summary>
+            <param name="type">The type of the waveform the Async Replayer should perform</param>
+            <param name="fc">Frequency of the performed wave</param>
+            <param name="maxAmplitude">Maximum possible amplitude of the actuator</param>
+            <param name="amplitude">Current amplitude of the systems. Can be between 0 and maxAmplitude</param>
+            <param name="playCycles">How many times this section should be repeated</param>
+            <param name="servos">A list with all connected servos</param>
+            <param name="spatialOnlyPattern">If the wave should be peristaltic or spatial</param>
+            <param name="startServo">Startpoint of the wave. Can be between the first and last servo.</param>
+        </member>
+        <member name="M:HerkulexGuiMapper.HerkulexAsyncReplayer.Move2Position(System.Double,System.Collections.Generic.List{HerkulexApi.IHerkulexServo})">
+            <summary>
+            Moves asynchronously all servos to a specific position
+            </summary>
+            <param name="target">Target position in degrees</param>
+            <param name="servos">List with all servos which should be moved</param>
+        </member>
+        <member name="T:HerkulexGuiMapper.WaveformGenerator">
+            <summary>
+            A class to generate different kind of waveforms. 
+            </summary>
+        </member>
+        <member name="M:HerkulexGuiMapper.WaveformGenerator.Generate(HerkulexGuiMapper.WaveformType,System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Generates an array of waves according to the input which can be displayed in a graphical user interface. 
+            </summary>
+            <param name="type">wave type which should be generated </param>
+            <param name="fc">Frequency of the wave</param>
+            <param name="playCycles">How many times if should be repeated</param>
+            <param name="amplitude">Current amplitude of the wave. Can be between 0 and maxAmplitude</param>
+            <param name="maxAmplitude">Maximal possible amplitude</param>
+            <returns></returns>
+        </member>
+        <member name="M:HerkulexGuiMapper.WaveformGenerator.GeneratePlayValues(HerkulexGuiMapper.WaveformType,System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Generates an array of waves according to the input which can be used to apply these waves to a serries of servos. 
+            </summary>
+            <param name="type">wave type which should be generated </param>
+            <param name="fc">Frequency of the wave</param>
+            <param name="playCycles">How many times if should be repeated</param>
+            <param name="amplitude">Current amplitude of the wave. Can be between 0 and maxAmplitude</param>
+            <param name="maxAmplitude">Maximal possible amplitude</param>
+            <returns></returns>
+        </member>
+        <member name="T:HerkulexGuiMapper.WaveformType">
+            <summary>
+            All possible waveform types which can be generated.
+            </summary>
+        </member>
+    </members>
+</doc>

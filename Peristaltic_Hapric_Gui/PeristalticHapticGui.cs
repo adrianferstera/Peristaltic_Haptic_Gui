@@ -566,7 +566,7 @@ namespace Peristaltic_Haptic_Gui
             var batteryThread = new Thread(() =>
                 batteryPercent = arduinoBattery.GetBatteryPercentage() * 100);
             batteryThread.Start();
-           // batteryThread.Join();
+            batteryThread.Join();
             batteryLevel = Math.Round(batteryPercent, 0);
             BatteryUpdate();
 
